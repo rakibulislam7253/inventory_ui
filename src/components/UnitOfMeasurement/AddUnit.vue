@@ -24,10 +24,10 @@
             <div class="flex justify-content-end gap-2">
                 <Button type="button" label="Cancel" severity="secondary" @click="modalClose"></Button>
                 <div v-if="unitData.id">
-                    <Button type="button" label="Update" @click="visible = false"></Button>
+                    <Button type="button" label="Update" @click="updateUnit()"></Button>
                 </div>
                 <div v-else>
-                    <Button type="button" label="Save" @click="visible = false"></Button>
+                    <Button type="button" label="Save" @click="addUnit()"></Button>
                 </div>
             </div>
         </Dialog>
@@ -47,6 +47,16 @@ export default {
         };
     },
     methods: {
+        addUnit() {
+            this.visible = false;
+            this.$toast.add({ severity: 'success', summary: 'Insert Successfully', detail: 'Message Content', life: 3000 });
+            this.$toast.add({ severity: 'error', summary: 'Error Message', detail: 'Message Content', life: 3000 });
+        },
+        updateUnit() {
+            this.visible = false;
+            this.$toast.add({ severity: 'success', summary: 'Update Successfully', detail: 'Message Content', life: 3000 });
+            this.$toast.add({ severity: 'error', summary: 'Error Message', detail: 'Message Content', life: 3000 });
+        },
         childData(PermissionData) {
             this.$emit('reload', { mydata: 'item.id' });
             console.log('selection data: ', PermissionData);
