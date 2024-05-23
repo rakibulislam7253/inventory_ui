@@ -1,5 +1,4 @@
 <template>
-    <h2>Incomplete</h2>
     <div class="card">
         <DataTable
             v-model:filters="filters"

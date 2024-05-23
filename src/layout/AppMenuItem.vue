@@ -65,6 +65,7 @@ watch(
     }
 );
 const itemClick = (event, item) => {
+    this.$emit('whisperedSecret', 'Hey parent, here a secret!');
     if (item.disabled) {
         event.preventDefault();
         return;

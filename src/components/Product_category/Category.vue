@@ -91,10 +91,10 @@
                 </template>
             </Column>
 
-            <Column field="activity" header="Activity" style="min-width: 10rem">
+            <Column field="activity" header="Activity" style="min-width: 8rem">
                 <template #body="{ data }">
-                    <Button type="button" icon="pi pi-pencil" rounded square @click="editUnit(data)" />
-                    <Button type="button" icon="pi pi-trash" class="ml-2" rounded square @click="editUnit(data)" />
+                    <Button type="button" style="width: 28px; height: 28px" icon="pi pi-pencil" rounded @click="editUnit(data)" />
+                    <Button type="button" style="width: 28px; height: 28px" icon="pi pi-trash" severity="danger" class="ml-2" rounded @click="editUnit(data)" />
                 </template>
             </Column>
         </DataTable>

@@ -1,4 +1,3 @@
-
 <template>
     <div class="card flex justify-content-center">
         <Toast />
