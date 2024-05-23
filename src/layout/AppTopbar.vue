@@ -8,7 +8,7 @@
         <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
             <i class="pi pi-bars"></i>
         </button>
-
+        <!-- <p>{{ localStorage.getItem('item-name') }}</p> -->
         <button class="p-link layout-topbar-menu-button layout-topbar-button" @click="onTopBarMenuButton()">
             <i class="pi pi-ellipsis-v"></i>
         </button>
@@ -27,14 +27,16 @@
                 <span>Settings</span>
             </button>
         </div>
+        <!-- {{ localStorage.getItem('item-name') }}; -->
     </div>
+    <appMenuItem @whisperedSecret="hearSecret"></appMenuItem>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
-
+import appMenuItem from '../layout/AppMenuItem.vue';
 const { layoutConfig, onMenuToggle } = useLayout();
 
 const outsideClickListener = ref(null);
@@ -55,6 +57,9 @@ const logoUrl = computed(() => {
 
 const onTopBarMenuButton = () => {
     topbarMenuActive.value = !topbarMenuActive.value;
+};
+const hearSecret = (secret) => {
+    console.log(secret);
 };
 const onSettingsClick = () => {
     topbarMenuActive.value = false;

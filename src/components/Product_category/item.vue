@@ -92,8 +92,8 @@
             </Column>
             <Column field="activity" header="Activity" style="min-width: 8rem">
                 <template #body="{ data }">
-                    <Button type="button" icon="pi pi-pencil" rounded square @click="editUnit(data)" />
-                    <Button type="button" icon="pi pi-trash" class="ml-2" rounded square @click="editUnit(data)" />
+                    <Button type="button" icon="pi pi-pencil" style="width: 28px; height: 28px" rounded square @click="editUnit(data)" />
+                    <Button type="button" icon="pi pi-trash" class="ml-2" style="width: 28px; height: 28px" severity="danger" rounded square @click="editUnit(data)" />
                 </template>
             </Column>
         </DataTable>

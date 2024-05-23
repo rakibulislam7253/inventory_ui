@@ -12,11 +12,7 @@
             :globalFilterFields="['name', 'country.name', 'representative.name', 'balance', 'status']"
         >
             <template #header>
-                <!-- <div style="text-align: left">
-                    <Button icon="pi pi-external-link" label="Export" @click="exportCSV($event)" />
-                </div> -->
                 <div class="flex justify-content-between">
-                    <!-- <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined @click="clearFilter()" /> -->
                     <IconField iconPosition="left">
                         <InputIcon>
                             <i class="pi pi-search" />
@@ -77,8 +73,8 @@
 
             <Column field="activity" header="Activity" style="min-width: 5rem">
                 <template #body="{ data }">
-                    <Button type="button" icon="pi pi-pencil" rounded square @click="editUnit(data)" />
-                    <Button type="button" icon="pi pi-trash" class="ml-2" rounded square @click="editUnit(data)" />
+                    <Button type="button" style="width: 30px; height: 30px" icon="pi pi-pencil" rounded @click="editUnit(data)" />
+                    <Button type="button" style="width: 30px; height: 30px" icon="pi pi-trash" severity="danger" class="ml-2" rounded @click="editUnit(data)" />
                 </template>
             </Column>
         </DataTable>

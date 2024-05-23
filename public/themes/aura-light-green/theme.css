@@ -3180,6 +3180,7 @@
     transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, outline-color 0.2s;
     border-radius: 6px;
     outline-color: transparent;
+    font-size: 12px;
   }
   .p-button:not(:disabled):hover {
     background: #059669;
@@ -4272,11 +4273,12 @@
   }
   .p-datatable .p-datatable-thead > tr > th {
     text-align: left;
-    padding: 0.75rem 1rem;
+    padding: 0.3rem 1rem;
     border: 1px solid #e2e8f0;
     border-width: 0 0 1px 0;
     font-weight: 600;
     color: #334155;
+    font-size: 12px;
     background: #ffffff;
     transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, outline-color 0.2s;
   }
@@ -4336,7 +4338,9 @@
     text-align: left;
     border: 1px solid #e2e8f0;
     border-width: 0 0 1px 0;
-    padding: 0.75rem 1rem;
+    padding: 0.1rem 1rem;
+    font-size: 12px;
+    font-weight: 500;
   }
   .p-datatable .p-datatable-tbody > tr > td .p-row-toggler,
 .p-datatable .p-datatable-tbody > tr > td .p-row-editor-init,
