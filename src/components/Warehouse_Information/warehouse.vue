@@ -1,16 +1,6 @@
 <template>
     <div class="card">
-        <DataTable
-            v-model:filters="filters"
-            ref="dt"
-            v-model:selection="selectedCustomers"
-            :value="customers"
-            paginator
-            :rows="10"
-            dataKey="id"
-            filterDisplay="menu"
-            :globalFilterFields="['name', 'country.name', 'representative.name', 'balance', 'status']"
-        >
+        <DataTable v-model:filters="filters" ref="dt" v-model:selection="selectedCustomers" :value="customers" paginator :rows="10" dataKey="id" filterDisplay="menu" :globalFilterFields="['name', 'Description', 'address']">
             <template #header>
                 <div class="flex justify-content-between">
                     <IconField iconPosition="left">
@@ -27,47 +17,44 @@
             <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
             <Column field="name" header="Name" sortable style="min-width: 14rem">
                 <template #body="{ data }">
-                    {{ data.name }}
+                    {{ data.warehouse_name }}
                 </template>
                 <template #filter="{ filterModel }">
                     <InputText v-model="filterModel.value" type="text" class="p-column-filter" placeholder="Search by name" />
                 </template>
             </Column>
-            <Column header="Description" sortable sortField="country.name" filterField="country.name" style="min-width: 14rem">
+            <Column header="Description" sortable sortField="description" filterField="description" style="min-width: 14rem">
                 <template #body="{ data }">
                     <div class="flex align-items-center gap-2">
-                        <img alt="flag" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`flag flag-${data.country.code}`" style="width: 24px" />
-                        <span>{{ data.country.name }}</span>
+                        <!-- <img alt="flag" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`flag flag-${data.country.code}`" style="width: 24px" /> -->
+                        <span>{{ data.description }}</span>
                     </div>
                 </template>
                 <template #filter="{ filterModel }">
                     <InputText v-model="filterModel.value" type="text" class="p-column-filter" placeholder="Search by country" />
                 </template>
             </Column>
-            <Column header="Location" sortable sortField="representative.name" filterField="representative" :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
+            <Column header="Location" sortable sortField="address" filterField="address" :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
                 <template #body="{ data }">
                     <div class="flex align-items-center gap-2">
-                        <img :alt="data.representative.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${data.representative.image}`" style="width: 32px" />
-                        <span>{{ data.representative.name }}</span>
+                        <!-- <img :alt="data.representative.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${data.representative.image}`" style="width: 32px" /> -->
+                        <span>{{ data.address }}</span>
                     </div>
                 </template>
                 <template #filter="{ filterModel }">
                     <MultiSelect v-model="filterModel.value" :options="representatives" optionLabel="name" placeholder="Any" class="p-column-filter">
-                        <template #option="slotProps">
+                        <!-- <template #option="slotProps">
                             <div class="flex align-items-center gap-2">
-                                <img :alt="slotProps.option.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${slotProps.option.image}`" style="width: 32px" />
+                    
                                 <span>{{ slotProps.option.name }}</span>
                             </div>
-                        </template>
+                        </template> -->
                     </MultiSelect>
                 </template>
             </Column>
             <Column field="date" header="Email" sortable filterField="date" dataType="date" style="min-width: 10rem">
                 <template #body="{ data }">
-                    {{ formatDate(data.date) }}
-                </template>
-                <template #filter="{ filterModel }">
-                    <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />
+                    <span>{{ data.email }}</span>
                 </template>
             </Column>
 
@@ -87,7 +74,7 @@
 
 <script>
 import { FilterMatchMode } from 'primevue/api';
-import { CustomerService } from '../../service/servicesData';
+import warehouseService from '../../service/warehouseData';
 import warehouseAdd from '../../components/Warehouse_Information/warehouseAdd.vue';
 import { ref } from 'vue';
 const PermissionData = ref(0);
@@ -122,17 +109,21 @@ export default {
         };
     },
     mounted() {
-        CustomerService.getCustomersMedium().then((data) => {
-            this.customers = this.getCustomers(data);
+        warehouseService.get_all_warehouse_info().then((data) => {
+            this.customers = this.getCustomers(data.data);
+            console.log(this.customers);
             this.loading = false;
         });
     },
+    // mounted() {
+    //     CustomerService.getCustomersMedium().then((data) => {
+    //         this.customers = this.getCustomers(data);
+    //         this.loading = false;
+    //     });
+    // },
     methods: {
         exportCSV() {
             this.$refs.dt.exportCSV();
-        },
-        getReload(PermissionData) {
-            console.log('come from child to parent data ', PermissionData.mydata);
         },
         editUnit(PermissionData) {
             this.visible = true;

@@ -53,7 +53,7 @@
             <Column field="activity" header="Activity" style="min-width: 5rem">
                 <template #body="{ data }">
                     <Button type="button" style="width: 30px; height: 30px" icon="pi pi-pencil" rounded @click="editUnit(data)" />
-                    <Button type="button" style="width: 30px; height: 30px" icon="pi pi-trash" severity="danger" class="ml-2" rounded @click="editUnit(data)" />
+                    <Button type="button" style="width: 30px; height: 30px" icon="pi pi-trash" severity="danger" class="ml-2" rounded @click="deleteData(data)" />
                 </template>
             </Column>
         </DataTable>
