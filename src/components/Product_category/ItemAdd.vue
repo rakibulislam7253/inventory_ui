@@ -1,10 +1,12 @@
 <template>
-    <div class="card flex justify-content-center">
+    <div class="card flex justify-content-center"> 
+
+    <div>
         {{ warehouseData.id }}
         <Dialog
             v-model:visible="visible"
             header="Item Information"
-            :style="{ width: '30rem' }"
+            :style="{ width: '40rem', height: '35rem'  } "
             :pt="{
                 root: 'border-none',
                 mask: {
@@ -12,30 +14,31 @@
                 }
             }"
         >
+        <div class="ml-5"> 
             <span class="p-text-secondary block mb-5">{{ warehouseData.id ? 'Update Item Information' : 'Add Item Information' }}</span>
             <div class="flex align-items-center gap-3 mb-3">
                 <label for="Name" class="font-semibold w-6rem">Category</label>
-                <InputText v-model="warehouseData.id" id="username" class="flex-auto" autocomplete="off" />
+                <InputText v-model="warehouseData.id" id="username" class="edit" autocomplete="off" />
             </div>
             <div class="flex align-items-center gap-3 mb-3">
                 <label class="font-semibold w-6rem">Item</label>
-                <InputText id="Description" class="flex-auto" autocomplete="off" />
+                <InputText id="Description" class="edit" autocomplete="off" />
             </div>
             <div class="flex align-items-center gap-3 mb-3">
                 <label class="font-semibold w-6rem">Uom</label>
-                <InputText id="Address" class="flex-auto" autocomplete="off" />
+                <InputText id="Address" class="edit" autocomplete="off" />
             </div>
             <div class="flex align-items-center gap-3 mb-3">
                 <label class="font-semibold w-6rem">Description</label>
-                <InputText id="Email" class="flex-auto" autocomplete="off" />
+                <InputText id="Email" class="edit" autocomplete="off" />
             </div>
             <div class="flex align-items-center gap-3 mb-3">
                 <label class="font-semibold w-6rem">Purchase Rate</label>
-                <InputText id="Address" class="flex-auto" autocomplete="off" />
+                <InputText id="Address" class="edit" autocomplete="off" />
             </div>
             <div class="flex align-items-center gap-3 mb-3">
                 <label class="font-semibold w-6rem">Reorder Level</label>
-                <InputText id="Email" class="flex-auto" autocomplete="off" />
+                <InputText id="Email" class="edit" autocomplete="off" />
             </div>
             <div class="flex justify-content-end gap-2">
                 <Button type="button" label="Cancel" severity="secondary" @click="modalClose"></Button>
@@ -46,8 +49,11 @@
                     <Button type="button" label="Save" @click="visible = false"></Button>
                 </div>
             </div>
+        </div>
+            
         </Dialog>
         <!-- <Button type="button" label="Cancel" severity="secondary" @click="childData('childToParent data')">Child to Parent</Button> -->
+    </div>
     </div>
 </template>
 <script>
@@ -83,3 +89,8 @@ export default {
     }
 };
 </script>
+<style>
+.edit {
+    width: 25rem;
+}
+</style>

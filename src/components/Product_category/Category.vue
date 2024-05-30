@@ -9,7 +9,7 @@
             :rows="10"
             dataKey="id"
             filterDisplay="menu"
-            :globalFilterFields="['name', 'country.name', 'representative.name', 'balance', 'status']"
+            :globalFilterFields="['Category', 'country.name', 'representative.name', 'balance', 'status']"
         >
             <template #header>
                 <!-- <div style="text-align: left">
@@ -29,19 +29,19 @@
             </template>
             <template #empty> No customers found. </template>
             <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
-            <Column field="name" header="Category" sortable style="min-width: 14rem">
+            <Column field="name" header="Category" sortable sortField="category_name" filterField="category_name" style="min-width: 14rem">
                 <template #body="{ data }">
-                    {{ data.name }}
+                    {{ data.category_name }}
                 </template>
                 <template #filter="{ filterModel }">
                     <InputText v-model="filterModel.value" type="text" class="p-column-filter" placeholder="Search by name" />
                 </template>
             </Column>
-            <Column header="Description" sortable sortField="country.name" filterField="country.name" style="min-width: 14rem">
+            <Column header="Description" sortable sortField="category_description" filterField="category_description" style="min-width: 14rem">
                 <template #body="{ data }">
                     <div class="flex align-items-center gap-2">
-                        <img alt="flag" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`flag flag-${data.country.code}`" style="width: 24px" />
-                        <span>{{ data.country.name }}</span>
+                        <!-- <img alt="flag" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`flag flag-${data.country.code}`" style="width: 24px" /> -->
+                        <span>{{ data.category_description }}</span>
                     </div>
                 </template>
                 <template #filter="{ filterModel }">
@@ -51,30 +51,18 @@
             <Column header="Created By" sortable sortField="representative.name" filterField="representative" :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
                 <template #body="{ data }">
                     <div class="flex align-items-center gap-2">
-                        <img :alt="data.representative.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${data.representative.image}`" style="width: 32px" />
-                        <span>{{ data.representative.name }}</span>
+                        <!-- <img :alt="data.representative.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${data.representative.image}`" style="width: 32px" /> -->
+                        <span>{{ data.make_by }}</span>
                     </div>
-                </template>
-                <template #filter="{ filterModel }">
-                    <MultiSelect v-model="filterModel.value" :options="representatives" optionLabel="name" placeholder="Any" class="p-column-filter">
-                        <template #option="slotProps">
-                            <div class="flex align-items-center gap-2">
-                                <img :alt="slotProps.option.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${slotProps.option.image}`" style="width: 32px" />
-                                <span>{{ slotProps.option.name }}</span>
-                            </div>
-                        </template>
-                    </MultiSelect>
                 </template>
             </Column>
             <Column field="date" header="Created Date" sortable filterField="date" dataType="date" style="min-width: 10rem">
                 <template #body="{ data }">
-                    {{ formatDate(data.date) }}
-                </template>
-                <template #filter="{ filterModel }">
-                    <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />
+                    <span>{{ data.make_dt }}</span>
+                    <!-- {{ formatDate(data.make_dt) }} -->
                 </template>
             </Column>
-            <Column field="date" header="Modified By" sortable filterField="date" dataType="date" style="min-width: 10rem">
+            <!-- <Column field="date" header="Modified By" sortable filterField="date" dataType="date" style="min-width: 10rem">
                 <template #body="{ data }">
                     {{ formatDate(data.date) }}
                 </template>
@@ -89,7 +77,7 @@
                 <template #filter="{ filterModel }">
                     <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />
                 </template>
-            </Column>
+            </Column> -->
 
             <Column field="activity" header="Activity" style="min-width: 8rem">
                 <template #body="{ data }">
@@ -107,7 +95,7 @@
 
 <script>
 import { FilterMatchMode } from 'primevue/api';
-import { CustomerService } from '../../service/servicesData';
+import productCategoryData from '../../service/productCategory';
 import CategoryAdd from '../../components/Product_category/CategoryAdd.vue';
 import { ref } from 'vue';
 const PermissionData = ref(0);
@@ -115,6 +103,7 @@ export default {
     components: { CategoryAdd },
     data() {
         return {
+            // productCategory: new productCategoryData(),
             visible: false,
             customers: null,
             filters: {
@@ -141,18 +130,22 @@ export default {
             loading: true
         };
     },
+    // mounted() {
+    //     CustomerService.getCustomersMedium().then((data) => {
+    //         this.customers = this.getCustomers(data);
+    //         this.loading = false;
+    //     });
+    // },
     mounted() {
-        CustomerService.getCustomersMedium().then((data) => {
-            this.customers = this.getCustomers(data);
+        productCategoryData.get_all_product_category().then((data) => {
+            this.customers = this.getCustomers(data.data);
+            console.log(this.customers);
             this.loading = false;
         });
     },
     methods: {
         exportCSV() {
             this.$refs.dt.exportCSV();
-        },
-        getReload(PermissionData) {
-            console.log('come from child to parent data ', PermissionData.mydata);
         },
         editUnit(PermissionData) {
             this.visible = true;
@@ -171,13 +164,13 @@ export default {
                 return d;
             });
         },
-        formatDate(value) {
-            return value.toLocaleDateString('en-US', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
-        },
+        // formatDate(value) {
+        //     return value.toLocaleDateString('en-US', {
+        //         day: '2-digit',
+        //         month: '2-digit',
+        //         year: 'numeric'
+        //     });
+        // },
         formatCurrency(value) {
             return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
         },

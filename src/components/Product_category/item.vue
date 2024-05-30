@@ -31,7 +31,7 @@
             <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
             <Column field="name" header="Category" sortable style="min-width: 14rem">
                 <template #body="{ data }">
-                    {{ data.name }}
+                    {{ data.category_name }}
                 </template>
                 <template #filter="{ filterModel }">
                     <InputText v-model="filterModel.value" type="text" class="p-column-filter" placeholder="Search by name" />
@@ -39,44 +39,34 @@
             </Column>
             <Column field="name" header="Item Name" sortable style="min-width: 14rem">
                 <template #body="{ data }">
-                    {{ data.name }}
+                    {{ data.product_name }}
                 </template>
                 <template #filter="{ filterModel }">
                     <InputText v-model="filterModel.value" type="text" class="p-column-filter" placeholder="Search by name" />
                 </template>
             </Column>
-            <Column header="Description" sortable sortField="country.name" filterField="country.name" style="min-width: 14rem">
+            <Column header="Description" sortable sortField="product_description" filterField="product_description" style="min-width: 14rem">
                 <template #body="{ data }">
                     <div class="flex align-items-center gap-2">
-                        <img alt="flag" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`flag flag-${data.country.code}`" style="width: 24px" />
-                        <span>{{ data.country.name }}</span>
+                        <!-- <img alt="flag" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`flag flag-${data.country.code}`" style="width: 24px" /> -->
+                        <span>{{ data.product_description}}</span>
                     </div>
                 </template>
                 <template #filter="{ filterModel }">
                     <InputText v-model="filterModel.value" type="text" class="p-column-filter" placeholder="Search by country" />
                 </template>
             </Column>
-            <Column header="Price" sortable sortField="representative.name" filterField="representative" :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
+            <Column header="Price" sortable sortField="product_price" filterField="product_price" :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
                 <template #body="{ data }">
                     <div class="flex align-items-center gap-2">
-                        <img :alt="data.representative.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${data.representative.image}`" style="width: 32px" />
-                        <span>{{ data.representative.name }}</span>
+                        <!-- <img :alt="data.representative.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${data.representative.image}`" style="width: 32px" /> -->
+                        <span>{{ data.product_price }}</span>
                     </div>
                 </template>
-                <template #filter="{ filterModel }">
-                    <MultiSelect v-model="filterModel.value" :options="representatives" optionLabel="name" placeholder="Any" class="p-column-filter">
-                        <template #option="slotProps">
-                            <div class="flex align-items-center gap-2">
-                                <img :alt="slotProps.option.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${slotProps.option.image}`" style="width: 32px" />
-                                <span>{{ slotProps.option.name }}</span>
-                            </div>
-                        </template>
-                    </MultiSelect>
-                </template>
             </Column>
-            <Column field="date" header="UOM" sortable filterField="date" dataType="date" style="min-width: 5rem">
+            <Column field="date" header="UOM" sortable filterField="unit_name" dataType="unit_name" style="min-width: 5rem">
                 <template #body="{ data }">
-                    {{ data.uom }}
+                    {{ data.unit_name }}
                 </template>
                 <template #filter="{ filterModel }">
                     <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />
@@ -84,7 +74,7 @@
             </Column>
             <Column field="date" header="Reorder Level" sortable filterField="date" dataType="date" style="min-width: 10rem">
                 <template #body="{ data }">
-                    {{ formatDate(data.date) }}
+                    <span>{{ data.reorder_level }}</span>
                 </template>
                 <template #filter="{ filterModel }">
                     <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />
@@ -106,7 +96,7 @@
 
 <script>
 import { FilterMatchMode } from 'primevue/api';
-import { CustomerService } from '../../service/servicesData';
+import itemService from '../../service/item';
 import ItemAdd from '../../components/Product_category/ItemAdd.vue';
 import { ref } from 'vue';
 const PermissionData = ref(0);
@@ -140,18 +130,22 @@ export default {
             loading: true
         };
     },
+    // mounted() {
+    //     CustomerService.getCustomersMedium().then((data) => {
+    //         this.customers = this.getCustomers(data);
+    //         this.loading = false;
+    //     });
+    // },
     mounted() {
-        CustomerService.getCustomersMedium().then((data) => {
-            this.customers = this.getCustomers(data);
+        itemService.get_all_product_details().then((data) => {
+            this.customers = this.getCustomers(data.data);
+            console.log(this.customers);
             this.loading = false;
         });
     },
     methods: {
         exportCSV() {
             this.$refs.dt.exportCSV();
-        },
-        getReload(PermissionData) {
-            console.log('come from child to parent data ', PermissionData.mydata);
         },
         editUnit(PermissionData) {
             this.visible = true;

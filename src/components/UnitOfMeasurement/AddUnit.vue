@@ -15,7 +15,6 @@
             <span class="p-text-secondary block mb-5">{{ unitData.unit_id ? 'Update Unit information.' : 'Add Unit information.' }}</span>
             <div class="flex align-items-center gap-3 mb-3">
                 <label for="Name" class="font-semibold w-6rem">Name</label>
-                <!-- <input type="text" v-model="unitData.unit_name" /> -->
                 <InputText type="text" v-model="unitData.unit_name" id="username" class="flex-auto" />
             </div>
             <div class="flex align-items-center gap-3 mb-5">
@@ -28,7 +27,7 @@
                     <Button type="button" label="Update" @click="updateUnit()"></Button>
                 </div>
                 <div v-else>
-                    <Button type="button" label="Save" @click ="addUnit()"></Button>
+                    <Button type="button" label="Save" @click="addUnit()"></Button>
                 </div>
             </div>
         </Dialog>
@@ -36,42 +35,65 @@
 </template>
 <script>
 import Unit_Info from '../../models/unit';
+import unitService from '../../service/unitData';
+import toast from '../../common/toast';
+// import sweet_alert from "@/common/sweet";
 export default {
     // components: { testing },
 
     data() {
         return {
             unitData: new Unit_Info(),
-            visible: false
+            visible: false,
+            unit_name: ''
         };
     },
     methods: {
         addUnit() {
             console.log(this.unitData);
-            this.visible = true;
-            // this.$toast.add({ severity: 'success', summary: 'Insert Successfully', detail: 'Message Content', life: 3000 });
-            // this.$toast.add({ severity: 'error', summary: 'Error Message', detail: 'Message Content', life: 3000 });
+            unitService.create_update_unit_of_measurement(this.unitData).then((res) => {
+                console.log(res);
+                if (res) {
+                    if (res.data.status_code) {
+                        this.visible = false;
+                        toast.confirmation_box(res);
+                    } else {
+                        this.visible = false;
+                        this.$toast.add({ severity: 'error', summary: 'Error Message', detail: 'Response not found!', life: 3000 });
+                        // toast.error_message('Response not found!');
+                    }
+                } else {
+                    this.visible = false;
+                    this.$toast.add({ severity: 'error', summary: 'Error Message', detail: 'Response not found!', life: 3000 });
+                    // toast.error_message('Response not found!');
+                }
+            });
         },
         updateUnit() {
             console.log(this.unitData);
-            this.visible = false;
-            this.$toast.add({ severity: 'success', summary: 'Update Successfully', detail: 'Message Content', life: 3000 });
-            this.$toast.add({ severity: 'error', summary: 'Error Message', detail: 'Message Content', life: 3000 });
+            this.unitData.auth_2nd_dt = '';
+            this.unitData.auth_2nd_by = '';
+            this.unitData.last_action = '';
+            unitService.create_update_unit_of_measurement(this.unitData).then((res) => {
+                console.log(res);
+                if (res.data.error_msg) {
+                    this.visible = false;
+                    toast.error_message(res.data.error_msg);
+                } else {
+                    toast.confirmation_box(res);
+                }
+            });
         },
-        // childData(PermissionData) {
-        //     this.$emit('reload', { mydata: 'item.id' });
-        //     console.log('selection data: ', PermissionData);
-        // },
+
         updatePermission(data) {
-            this.unitData = "";
-            console.log(this.unitData);
-            if (data) {
+            // console.log(data);
+            if (data.unit_id) {
                 this.visible = true;
-                this.unitData=data;
+                this.unitData.loadModel(data);
+                console.log('get data', this.unitData);
             } else {
-                this.unitData = '';
-                console.log('child data', this.unitData);
                 this.visible = true;
+                console.log('get data1', this.unitData);
             }
         },
         modalClose() {
@@ -81,3 +103,4 @@ export default {
     }
 };
 </script>
+../../common/toast
