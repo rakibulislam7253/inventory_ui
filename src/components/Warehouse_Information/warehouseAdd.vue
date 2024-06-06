@@ -1,6 +1,5 @@
 <template>
     <div class="card flex justify-content-center">
-        {{ warehouseData.id }}
         <Dialog
             v-model:visible="visible"
             header="Warehouse Information"
@@ -31,10 +30,11 @@
             </div>
             <div class="flex align-items-center gap-3 mb-3">
                 <label class="font-semibold w-6rem">Branch</label>
-                <InputText id="Email" v-model="warehouseData.branch_id" class="flex-auto" autocomplete="off" />
+                <Dropdown v-model="warehouseData.branch_id" :options="branchs" optionLabel="name" placeholder="Select Branch" class="w-full md:w-20rem" />
+                <!-- <InputText id="Email" v-model="warehouseData.branch_id" class="flex-auto" autocomplete="off" /> -->
             </div>
             <div class="flex justify-content-end gap-2">
-                <Button type="button" label="Cancel" severity="secondary" @click="modalClose"></Button>
+                <Button type="button" label="Cancel" severity="secondary" @click="modalClose()"></Button>
                 <div v-if="warehouseData.warehouse_id">
                     <Button type="button" label="Update" @click="Update()"></Button>
                 </div>
@@ -54,29 +54,44 @@ export default {
     data() {
         return {
             warehouseData: new warehouse_Info(),
-            visible: false
+            visible: false,
+            branch: '',
+            branchs: [
+                { name: 'Principal Branch', code: '1001' },
+                { name: 'Nayanpur Bazar Branch ', code: '1002' },
+                { name: 'Narayanganj Branch', code: '1003' },
+                { name: 'Gulshan Corporate Branch', code: '1004' },
+                { name: 'Seedstore Bazar Branch', code: '1005' }
+            ]
         };
     },
+
     methods: {
         CreatedWarehouse() {
+            this.warehouseData.branch_id = this.warehouseData.branch_id.code;
             console.log(this.warehouseData);
-            warehouseService.create_update_warehouse_info(this.warehouseData).then((res) => {
-                console.log('create', res);
-                if (res) {
-                    if (res.data.status_code) {
-                        this.visible = false;
-                        toast.confirmation_box(res);
-                    } else {
-                        this.visible = false;
-                        this.$toast.add({ severity: 'error', summary: 'Error Message', detail: 'Response not found!', life: 3000 });
-                        // toast.error_message('Response not found!');
-                    }
+            if (this.warehouseData.warehouse_name) {
+                if (this.warehouseData.branch_id) {
+                    warehouseService.create_update_warehouse_info(this.warehouseData).then((res) => {
+                        console.log('create', res);
+
+                        if (res.data.status_code) {
+                            this.visible = false;
+                            this.$emit('whisperedSecret');
+                            this.warehouseData.loadModel('');
+                            toast.confirmation_box(res);
+                        } else {
+                            this.visible = false;
+                            this.$toast.add({ severity: 'error', summary: 'Error Message', detail: 'Response not found!', life: 3000 });
+                            // toast.error_message('Response not found!');
+                        }
+                    });
                 } else {
-                    this.visible = false;
-                    this.$toast.add({ severity: 'error', summary: 'Error Message', detail: 'Response not found!', life: 3000 });
-                    // toast.error_message('Response not found!');
+                    this.$toast.add({ severity: 'error', summary: 'Input Required', detail: 'Please Insert Branch Name', life: 3000 });
                 }
-            });
+            } else {
+                this.$toast.add({ severity: 'error', summary: 'Input Required', detail: 'Please Insert Warehouse Name', life: 3000 });
+            }
         },
         Update() {
             this.warehouseData.auth_1st_by = '';
@@ -112,6 +127,7 @@ export default {
         modalClose() {
             this.visible = false;
             this.warehouseData = '';
+            this.warehouseData.loadModel('');
         }
     }
 };

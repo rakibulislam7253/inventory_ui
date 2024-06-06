@@ -87,7 +87,7 @@
         </div>
     </div>
     <!----------------------------- dialog ---------------------------------------------------->
-    <RequisitionAdd ref="PermissionData" @reload="getReload" />
+    <RequisitionAdd style="border: none; background-color: #f5f9ff" ref="PermissionData" @reload="getReload" />
 </template>
 
 <script>

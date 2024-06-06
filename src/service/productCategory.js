@@ -6,9 +6,9 @@ class productCategoryService {
     get_all_product_category() {
         return axios.get(BASE_URL + 'get_all_product_category');
     }
-    create_update_warehouse_info(categoryData) {
+    create_update_product_category(categoryData) {
         console.log(categoryData);
-        return axios.post(BASE_URL + 'create_update_warehouse_info', categoryData);
+        return axios.post(BASE_URL + 'create_update_product_category', categoryData);
     }
 }
 
