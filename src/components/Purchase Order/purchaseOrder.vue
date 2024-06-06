@@ -30,9 +30,6 @@
                 <template #body="{ data }">
                     {{ data.name }}
                 </template>
-                <template #filter="{ filterModel }">
-                    <InputText v-model="filterModel.value" type="text" class="p-column-filter" placeholder="Search by name" />
-                </template>
             </Column>
             <Column header="Item Name" sortable sortField="representative.name" filterField="representative" :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
                 <template #body="{ data }">
@@ -41,47 +38,25 @@
                         <span>{{ data.representative.name }}</span>
                     </div>
                 </template>
-                <template #filter="{ filterModel }">
-                    <MultiSelect v-model="filterModel.value" :options="representatives" optionLabel="name" placeholder="Any" class="p-column-filter">
-                        <template #option="slotProps">
-                            <div class="flex align-items-center gap-2">
-                                <img :alt="slotProps.option.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${slotProps.option.image}`" style="width: 32px" />
-                                <span>{{ slotProps.option.name }}</span>
-                            </div>
-                        </template>
-                    </MultiSelect>
-                </template>
             </Column>
             <Column field="date" header="Unit Price" sortable filterField="date" dataType="date" style="min-width: 10rem">
                 <template #body="{ data }">
                     {{ formatDate(data.date) }}
-                </template>
-                <template #filter="{ filterModel }">
-                    <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />
                 </template>
             </Column>
             <Column field="date" header="Requisition Quantity" sortable filterField="date" dataType="date" style="min-width: 10rem">
                 <template #body="{ data }">
                     {{ formatDate(data.date) }}
                 </template>
-                <template #filter="{ filterModel }">
-                    <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />
-                </template>
             </Column>
             <Column field="date" header="Order Quantity" sortable filterField="date" dataType="date" style="min-width: 10rem">
                 <template #body="{ data }">
                     {{ formatDate(data.date) }}
                 </template>
-                <template #filter="{ filterModel }">
-                    <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />
-                </template>
             </Column>
             <Column field="date" header="Total Price" sortable filterField="date" dataType="date" style="min-width: 10rem">
                 <template #body="{ data }">
                     {{ formatDate(data.date) }}
-                </template>
-                <template #filter="{ filterModel }">
-                    <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />
                 </template>
             </Column>
 
@@ -97,8 +72,8 @@
         </div>
         <!-- <Button label="Show" @click="visible = true" /> -->
     </div>
-    <!----------------------------- dialog ---------------------------------------------------->
-    <purchaseAdd ref="PermissionData" @reload="getReload" />
+    <!--------------------------------------- dialog ---------------------------------------->
+    <purchaseAdd style="border: none; background-color: #f5f9ff" ref="PermissionData" @reload="getReload" />
 </template>
 
 <script>

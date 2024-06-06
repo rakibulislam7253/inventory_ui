@@ -22,7 +22,7 @@
                 <InputText id="Description" v-model="unitData.unit_description" class="flex-auto" />
             </div>
             <div class="flex justify-content-end gap-2">
-                <Button type="button" label="Cancel" severity="secondary" @click="modalClose"></Button>
+                <Button type="button" label="Cancel" severity="secondary" @click="modalClose()"></Button>
                 <div v-if="unitData.unit_id">
                     <Button type="button" label="Update" @click="updateUnit()"></Button>
                 </div>
@@ -51,23 +51,23 @@ export default {
     methods: {
         addUnit() {
             console.log(this.unitData);
-            unitService.create_update_unit_of_measurement(this.unitData).then((res) => {
-                console.log(res);
-                if (res) {
-                    if (res.data.status_code) {
+            if (this.unitData.unit_name) {
+                unitService.create_update_unit_of_measurement(this.unitData).then((res) => {
+                    console.log(res);
+
+                    if (res.data.status_code == 1) {
                         this.visible = false;
+                        this.$emit('whisperedSecret');
+                        this.unitData.loadModel('');
                         toast.confirmation_box(res);
                     } else {
                         this.visible = false;
                         this.$toast.add({ severity: 'error', summary: 'Error Message', detail: 'Response not found!', life: 3000 });
-                        // toast.error_message('Response not found!');
                     }
-                } else {
-                    this.visible = false;
-                    this.$toast.add({ severity: 'error', summary: 'Error Message', detail: 'Response not found!', life: 3000 });
-                    // toast.error_message('Response not found!');
-                }
-            });
+                });
+            } else {
+                this.$toast.add({ severity: 'error', summary: 'Input Required', detail: 'Please insert Unit Name!', life: 3000 });
+            }
         },
         updateUnit() {
             console.log(this.unitData);
@@ -99,6 +99,7 @@ export default {
         modalClose() {
             this.visible = false;
             this.unitData = '';
+            this.unitData.loadModel('');
         }
     }
 };

@@ -9,14 +9,10 @@
             :rows="10"
             dataKey="id"
             filterDisplay="menu"
-            :globalFilterFields="['name', 'country.name', 'representative.name', 'balance', 'status']"
+            :globalFilterFields="['category_name', 'product_name', 'product_description', 'product_price', 'unit_name', 'reorder_level']"
         >
             <template #header>
-                <!-- <div style="text-align: left">
-                    <Button icon="pi pi-external-link" label="Export" @click="exportCSV($event)" />
-                </div> -->
                 <div class="flex justify-content-between">
-                    <!-- <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined @click="clearFilter()" /> -->
                     <IconField iconPosition="left">
                         <InputIcon>
                             <i class="pi pi-search" />
@@ -28,59 +24,41 @@
                 </div>
             </template>
             <template #empty> No customers found. </template>
-            <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
-            <Column field="name" header="Category" sortable style="min-width: 14rem">
+            <Column field="category_name" header="Category" sortable sortField="category_name" filterField="category_name" style="min-width: 14rem">
                 <template #body="{ data }">
                     {{ data.category_name }}
                 </template>
-                <template #filter="{ filterModel }">
-                    <InputText v-model="filterModel.value" type="text" class="p-column-filter" placeholder="Search by name" />
-                </template>
             </Column>
-            <Column field="name" header="Item Name" sortable style="min-width: 14rem">
+            <Column field="product_name" header="Item Name" sortable sortField="product_name" filterField="product_name" style="min-width: 14rem">
                 <template #body="{ data }">
                     {{ data.product_name }}
                 </template>
-                <template #filter="{ filterModel }">
-                    <InputText v-model="filterModel.value" type="text" class="p-column-filter" placeholder="Search by name" />
-                </template>
             </Column>
-            <Column header="Description" sortable sortField="product_description" filterField="product_description" style="min-width: 14rem">
+            <Column field="product_description" header="Description" sortable sortField="product_description" filterField="product_description" style="min-width: 14rem">
                 <template #body="{ data }">
                     <div class="flex align-items-center gap-2">
-                        <!-- <img alt="flag" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`flag flag-${data.country.code}`" style="width: 24px" /> -->
-                        <span>{{ data.product_description}}</span>
+                        <span>{{ data.product_description }}</span>
                     </div>
                 </template>
-                <template #filter="{ filterModel }">
-                    <InputText v-model="filterModel.value" type="text" class="p-column-filter" placeholder="Search by country" />
-                </template>
             </Column>
-            <Column header="Price" sortable sortField="product_price" filterField="product_price" :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
+            <Column field="product_price" header="Price" sortable sortField="product_price" filterField="product_price" :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
                 <template #body="{ data }">
                     <div class="flex align-items-center gap-2">
-                        <!-- <img :alt="data.representative.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${data.representative.image}`" style="width: 32px" /> -->
                         <span>{{ data.product_price }}</span>
                     </div>
                 </template>
             </Column>
-            <Column field="date" header="UOM" sortable filterField="unit_name" dataType="unit_name" style="min-width: 5rem">
+            <Column field="unit_name" header="UOM" sortable sortField="unit_name" filterField="unit_name" style="min-width: 5rem">
                 <template #body="{ data }">
                     {{ data.unit_name }}
                 </template>
-                <template #filter="{ filterModel }">
-                    <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />
-                </template>
             </Column>
-            <Column field="date" header="Reorder Level" sortable filterField="date" dataType="date" style="min-width: 10rem">
+            <Column field="reorder_level" header="Reorder Level" sortable sortField="reorder_level" filterField="reorder_level" style="min-width: 10rem">
                 <template #body="{ data }">
                     <span>{{ data.reorder_level }}</span>
                 </template>
-                <template #filter="{ filterModel }">
-                    <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />
-                </template>
             </Column>
-            <Column field="activity" header="Activity" style="min-width: 8rem">
+            <Column header="Activity" style="min-width: 8rem">
                 <template #body="{ data }">
                     <Button type="button" icon="pi pi-pencil" style="width: 28px; height: 28px" rounded square @click="editUnit(data)" />
                     <Button type="button" icon="pi pi-trash" class="ml-2" style="width: 28px; height: 28px" severity="danger" rounded square @click="editUnit(data)" />
@@ -91,7 +69,7 @@
         <!-- <Button label="Show" @click="visible = true" /> -->
     </div>
     <!----------------------------- dialog ---------------------------------------------------->
-    <ItemAdd ref="PermissionData" @reload="getReload" />
+    <ItemAdd style="border: none; background-color: #f5f9ff" ref="PermissionData" @whisperedSecret="hearSecret" />
 </template>
 
 <script>
@@ -146,6 +124,13 @@ export default {
     methods: {
         exportCSV() {
             this.$refs.dt.exportCSV();
+        },
+        hearSecret() {
+            itemService.get_all_product_details().then((data) => {
+                this.customers = this.getCustomers(data.data);
+                console.log(this.customers);
+                this.loading = false;
+            });
         },
         editUnit(PermissionData) {
             this.visible = true;

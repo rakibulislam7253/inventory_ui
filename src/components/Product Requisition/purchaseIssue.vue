@@ -27,16 +27,10 @@
                 <template #body="{ data, field }">
                     {{ formatCurrency(data[field]) }}
                 </template>
-                <template #editor="{ data, field }">
-                    <InputNumber v-model="data[field]" mode="currency" currency="USD" locale="en-US" />
-                </template>
             </Column>
             <Column field="price" header="Remarks" style="width: 20%">
                 <template #body="{ data, field }">
                     {{ formatCurrency(data[field]) }}
-                </template>
-                <template #editor="{ data, field }">
-                    <InputNumber v-model="data[field]" mode="currency" currency="USD" locale="en-US" />
                 </template>
             </Column>
             <Column header="Action" :rowEditor="true" style="width: 10%; min-width: 8rem" bodyStyle="text-align:center"></Column>
@@ -47,7 +41,7 @@
             <Button style="width: auto" icon="pi pi-times" label="Cancel" @click="ordered()" />
         </div>
     </div>
-    <purchaseIssueShow style="border: none" ref="PermissionData" @reload="getReload" />
+    <purchaseIssueShow style="border: none; background-color: #f5f9ff" ref="PermissionData" @reload="getReload" />
 </template>
 
 <script>

@@ -22,7 +22,7 @@
                 <InputText id="Description" v-model="productCategory.category_description" class="flex-auto" autocomplete="off" />
             </div>
             <div class="flex justify-content-end gap-2">
-                <Button type="button" label="Cancel" severity="secondary" @click="modalClose"></Button>
+                <Button type="button" label="Cancel" severity="secondary" @click="modalClose()"></Button>
                 <div v-if="productCategory.category_id">
                     <Button type="button" label="Update" @click="updateCategory()"></Button>
                 </div>
@@ -61,6 +61,7 @@ export default {
                 if (res.data.error_msg) {
                     this.visible = false;
                     toast.error_message(res.data.error_msg);
+                    this.itemData.loadModel('');
                 } else {
                     toast.confirmation_box(res);
                 }
@@ -69,11 +70,13 @@ export default {
         },
         addCategory() {
             console.log('add data', this.productCategory);
-            productCategoryData.create_update_warehouse_info(this.productCategory).then((res) => {
+            productCategoryData.create_update_product_category(this.productCategory).then((res) => {
                 console.log(res);
-                if (res) {
+                if (this.productCategory.category_name) {
                     if (res.data.status_code) {
                         this.visible = false;
+                        this.$emit('whisperedSecret');
+                        this.productCategory.loadModel('');
                         toast.confirmation_box(res);
                     } else {
                         this.visible = false;
@@ -81,8 +84,7 @@ export default {
                         // toast.error_message('Response not found!');
                     }
                 } else {
-                    this.visible = false;
-                    this.$toast.add({ severity: 'error', summary: 'Error Message', detail: 'Response not found!', life: 3000 });
+                    this.$toast.add({ severity: 'error', summary: 'Input Required', detail: 'Please insert Category Name!', life: 3000 });
                     // toast.error_message('Response not found!');
                 }
                 // this.loading = false;
@@ -101,6 +103,7 @@ export default {
         modalClose() {
             this.visible = false;
             this.category = '';
+            this.productCategory.loadModel('');
         }
     }
 };

@@ -14,57 +14,33 @@
                 </div>
             </template>
             <template #empty> No customers found. </template>
-            <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
-            <Column field="unit_name" header="Unit Name" sortable style="min-width: 14rem">
+            <Column field="unit_name" header="Unit Name" sortable sortField="unit_name" filterField="unit_name" style="min-width: 14rem">
                 <template #body="{ data }">
                     {{ data.unit_name }}
                 </template>
-                <template #filter="{ filterModel }">
-                    <InputText v-model="filterModel.value" type="text" class="p-column-filter" placeholder="Search by name" />
-                </template>
             </Column>
-            <Column header="Unit Description" sortable sortField="country.name" filterField="country.name" style="min-width: 14rem">
+            <Column field="unit_description" header="Unit Description" sortable sortField="unit_description" filterField="unit_description" style="min-width: 14rem">
                 <template #body="{ data }">
-                    <div class="flex align-items-center gap-2">
-                        <span>{{ data.unit_description }}</span>
-                    </div>
-                </template>
-                <template #filter="{ filterModel }">
-                    <InputText v-model="filterModel.value" type="text" class="p-column-filter" placeholder="Search by country" />
-                </template>
-            </Column>
-            <Column header="Make Date" sortable sortField="representative.name" filterField="representative" :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
-                <template #body="{ data }">
-                    <div class="flex align-items-center gap-2">
-                        <span>{{ data.make_dt }}</span>
-                    </div>
-                </template>
-                <template #filter="{ filterModel }">
-                    <MultiSelect v-model="filterModel.value" :options="representatives" optionLabel="name" placeholder="Any" class="p-column-filter">
-                        <template #body="{ data }">
-                            <div class="flex align-items-center gap-2">
-                                <span>{{ data }}</span>
-                            </div>
-                        </template>
-                    </MultiSelect>
+                    <!-- <div class="flex align-items-center gap-2"> -->
+                    {{ data.unit_description }}
+                    <!-- </div> -->
                 </template>
             </Column>
 
             <Column field="activity" header="Activity" style="min-width: 5rem">
                 <template #body="{ data }">
                     <Button type="button" style="width: 30px; height: 30px" icon="pi pi-pencil" rounded @click="editUnit(data)" />
-                    <Button type="button" style="width: 30px; height: 30px" icon="pi pi-trash" severity="danger" class="ml-2" rounded @click="deleteData(data)" />
+                    <Button type="button" style="width: 30px; height: 30px" icon="pi pi-trash" severity="danger" class="ml-3" rounded @click="deleteData(data)" />
                 </template>
             </Column>
         </DataTable>
     </div>
     <!----------------------------- dialog ---------------------------------------------------->
-    <addUnit ref="PermissionData" />
+    <addUnit class="addunit" ref="PermissionData" @whisperedSecret="hearSecret" />
 </template>
 
 <script>
 import { FilterMatchMode } from 'primevue/api';
-// import { CustomerService } from '../../service/servicesData';
 import unitService from '../../service/unitData';
 import addUnit from '../../components/UnitOfMeasurement/AddUnit.vue';
 import { ref } from 'vue';
@@ -83,18 +59,7 @@ export default {
                 status: { value: null, matchMode: FilterMatchMode.EQUALS },
                 verified: { value: null, matchMode: FilterMatchMode.EQUALS }
             },
-            representatives: [
-                { name: 'Amy Elsner', image: 'amyelsner.png' },
-                { name: 'Anna Fali', image: 'annafali.png' },
-                { name: 'Asiya Javayant', image: 'asiyajavayant.png' },
-                { name: 'Bernardo Dominic', image: 'bernardodominic.png' },
-                { name: 'Elwin Sharvill', image: 'elwinsharvill.png' },
-                { name: 'Ioni Bowcher', image: 'ionibowcher.png' },
-                { name: 'Ivan Magalhaes', image: 'ivanmagalhaes.png' },
-                { name: 'Onyama Limba', image: 'onyamalimba.png' },
-                { name: 'Stephen Shaw', image: 'stephenshaw.png' },
-                { name: 'XuXue Feng', image: 'xuxuefeng.png' }
-            ],
+
             statuses: ['unqualified', 'qualified', 'new', 'negotiation', 'renewal', 'proposal'],
             loading: true
         };
@@ -109,11 +74,17 @@ export default {
     },
 
     methods: {
-        exportCSV() {
+        exportCSV(event) {
+            console.log(event.target.value);
             this.$refs.dt.exportCSV();
         },
-        getReload(PermissionData) {
-            console.log('come from child to parent data ', PermissionData.mydata);
+        hearSecret() {
+            unitService.get_all_unit_of_measurements().then((data) => {
+                console.log(data);
+                this.customers = this.getCustomers(data.data);
+                console.log(this.customers);
+                this.loading = false;
+            });
         },
         editUnit(PermissionData) {
             // this.visible = true;
@@ -163,3 +134,9 @@ export default {
     }
 };
 </script>
+<style>
+.addunit {
+    border: none;
+    background-color: #f5f9ff;
+}
+</style>

@@ -1,20 +1,7 @@
 <template>
     <div class="card">
-        <DataTable
-            v-model:filters="filters"
-            ref="dt"
-            v-model:selection="selectedCustomers"
-            :value="customers"
-            paginator
-            :rows="10"
-            dataKey="id"
-            filterDisplay="menu"
-            :globalFilterFields="['Category', 'country.name', 'representative.name', 'balance', 'status']"
-        >
+        <DataTable v-model:filters="filters" ref="dt" v-model:selection="selectedCustomers" :value="customers" paginator :rows="10" dataKey="id" filterDisplay="menu" :globalFilterFields="['category_name', 'category_description', 'make_dt']">
             <template #header>
-                <!-- <div style="text-align: left">
-                    <Button icon="pi pi-external-link" label="Export" @click="exportCSV($event)" />
-                </div> -->
                 <div class="flex justify-content-between">
                     <!-- <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined @click="clearFilter()" /> -->
                     <IconField iconPosition="left">
@@ -29,57 +16,34 @@
             </template>
             <template #empty> No customers found. </template>
             <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
-            <Column field="name" header="Category" sortable sortField="category_name" filterField="category_name" style="min-width: 14rem">
+            <Column field="category_name" header="Category" sortable sortField="category_name" filterField="category_name" style="min-width: 14rem">
                 <template #body="{ data }">
                     {{ data.category_name }}
                 </template>
-                <template #filter="{ filterModel }">
-                    <InputText v-model="filterModel.value" type="text" class="p-column-filter" placeholder="Search by name" />
-                </template>
             </Column>
-            <Column header="Description" sortable sortField="category_description" filterField="category_description" style="min-width: 14rem">
+            <Column field="category_description" header="Description" sortable sortField="category_description" filterField="category_description" style="min-width: 14rem">
                 <template #body="{ data }">
                     <div class="flex align-items-center gap-2">
-                        <!-- <img alt="flag" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`flag flag-${data.country.code}`" style="width: 24px" /> -->
                         <span>{{ data.category_description }}</span>
                     </div>
                 </template>
-                <template #filter="{ filterModel }">
-                    <InputText v-model="filterModel.value" type="text" class="p-column-filter" placeholder="Search by country" />
-                </template>
             </Column>
-            <Column header="Created By" sortable sortField="representative.name" filterField="representative" :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
+            <!-- <Column header="Created By" sortable sortField="representative.name" filterField="representative" :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
                 <template #body="{ data }">
                     <div class="flex align-items-center gap-2">
-                        <!-- <img :alt="data.representative.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${data.representative.image}`" style="width: 32px" /> -->
+                        
                         <span>{{ data.make_by }}</span>
                     </div>
                 </template>
-            </Column>
-            <Column field="date" header="Created Date" sortable filterField="date" dataType="date" style="min-width: 10rem">
+            </Column> -->
+            <Column field="make_dt" header="Created Date" sortable filterField="make_dt" dataType="date" style="min-width: 10rem">
                 <template #body="{ data }">
                     <span>{{ data.make_dt }}</span>
                     <!-- {{ formatDate(data.make_dt) }} -->
                 </template>
             </Column>
-            <!-- <Column field="date" header="Modified By" sortable filterField="date" dataType="date" style="min-width: 10rem">
-                <template #body="{ data }">
-                    {{ formatDate(data.date) }}
-                </template>
-                <template #filter="{ filterModel }">
-                    <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />
-                </template>
-            </Column>
-            <Column field="date" header="Modification Date" sortable filterField="date" dataType="date" style="min-width: 10rem">
-                <template #body="{ data }">
-                    {{ formatDate(data.date) }}
-                </template>
-                <template #filter="{ filterModel }">
-                    <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />
-                </template>
-            </Column> -->
 
-            <Column field="activity" header="Activity" style="min-width: 8rem">
+            <Column header="Activity" style="min-width: 8rem">
                 <template #body="{ data }">
                     <Button type="button" style="width: 28px; height: 28px" icon="pi pi-pencil" rounded @click="editUnit(data)" />
                     <Button type="button" style="width: 28px; height: 28px" icon="pi pi-trash" severity="danger" class="ml-2" rounded @click="editUnit(data)" />
@@ -90,7 +54,7 @@
         <!-- <Button label="Show" @click="visible = true" /> -->
     </div>
     <!----------------------------- dialog ---------------------------------------------------->
-    <CategoryAdd ref="PermissionData" @reload="getReload" />
+    <CategoryAdd style="border: none; background-color: #f5f9ff" ref="PermissionData" @whisperedSecret="hearSecret" />
 </template>
 
 <script>
@@ -114,18 +78,6 @@ export default {
                 status: { value: null, matchMode: FilterMatchMode.EQUALS },
                 verified: { value: null, matchMode: FilterMatchMode.EQUALS }
             },
-            representatives: [
-                { name: 'Amy Elsner', image: 'amyelsner.png' },
-                { name: 'Anna Fali', image: 'annafali.png' },
-                { name: 'Asiya Javayant', image: 'asiyajavayant.png' },
-                { name: 'Bernardo Dominic', image: 'bernardodominic.png' },
-                { name: 'Elwin Sharvill', image: 'elwinsharvill.png' },
-                { name: 'Ioni Bowcher', image: 'ionibowcher.png' },
-                { name: 'Ivan Magalhaes', image: 'ivanmagalhaes.png' },
-                { name: 'Onyama Limba', image: 'onyamalimba.png' },
-                { name: 'Stephen Shaw', image: 'stephenshaw.png' },
-                { name: 'XuXue Feng', image: 'xuxuefeng.png' }
-            ],
             statuses: ['unqualified', 'qualified', 'new', 'negotiation', 'renewal', 'proposal'],
             loading: true
         };
@@ -146,6 +98,13 @@ export default {
     methods: {
         exportCSV() {
             this.$refs.dt.exportCSV();
+        },
+        hearSecret() {
+            productCategoryData.get_all_product_category().then((data) => {
+                this.customers = this.getCustomers(data.data);
+                console.log(this.customers);
+                this.loading = false;
+            });
         },
         editUnit(PermissionData) {
             this.visible = true;

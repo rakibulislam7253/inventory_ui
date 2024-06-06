@@ -1,7 +1,7 @@
 <template>
     <div class="layout-topbar">
         <router-link to="/" class="layout-topbar-logo">
-            <img :src="logoUrl" alt="logo" />
+            <img :src="czb_logo" alt="logo" />
             <!-- <span>Citizens Banl PLC</span> -->
         </router-link>
 
@@ -37,7 +37,8 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
 import appMenuItem from '../layout/AppMenuItem.vue';
-const { layoutConfig, onMenuToggle } = useLayout();
+import czb_logo from '../assets/czb-logo.png';
+const { onMenuToggle } = useLayout();
 
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
@@ -51,9 +52,9 @@ onBeforeUnmount(() => {
     unbindOutsideClickListener();
 });
 
-const logoUrl = computed(() => {
-    return `layout/images/${layoutConfig.darkTheme.value ? 'czb-logo' : 'czb-logo'}.png`;
-});
+// const logoUrl = computed(() => {
+//     return `layout/images/${layoutConfig.darkTheme.value ? 'czb-logo' : 'czb-logo'}.png`;
+// });
 
 const onTopBarMenuButton = () => {
     topbarMenuActive.value = !topbarMenuActive.value;
