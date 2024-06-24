@@ -21,9 +21,7 @@
             </Column>
             <Column field="unit_description" header="Unit Description" sortable sortField="unit_description" filterField="unit_description" style="min-width: 14rem">
                 <template #body="{ data }">
-                    <!-- <div class="flex align-items-center gap-2"> -->
                     {{ data.unit_description }}
-                    <!-- </div> -->
                 </template>
             </Column>
 

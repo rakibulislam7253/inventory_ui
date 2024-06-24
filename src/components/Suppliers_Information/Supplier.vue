@@ -154,6 +154,5 @@ export default {
 </script>
 <style>
 field {
-
 }
 </style>

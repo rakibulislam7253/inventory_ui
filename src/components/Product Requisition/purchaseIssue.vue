@@ -25,12 +25,12 @@
             </Column>
             <Column field="Returned Quantity" header="Approved Quantity" style="width: 20%">
                 <template #body="{ data, field }">
-                    {{ formatCurrency(data[field]) }}
+                    {{ data[field] }}
                 </template>
             </Column>
             <Column field="price" header="Remarks" style="width: 20%">
                 <template #body="{ data, field }">
-                    {{ formatCurrency(data[field]) }}
+                    {{ data[field] }}
                 </template>
             </Column>
             <Column header="Action" :rowEditor="true" style="width: 10%; min-width: 8rem" bodyStyle="text-align:center"></Column>
