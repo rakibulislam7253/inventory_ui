@@ -168,7 +168,7 @@ export default {
         onRowEditSave(event) {
             console.log(event);
             let { newData, index } = event;
-            if ( newData.order_quantity >= newData.receive_quantity) {
+            if (newData.order_quantity >= newData.receive_quantity) {
                 if (newData.receive_quantity != 0) {
                     let returnQuantity = newData.order_quantity - newData.receive_quantity;
                     let returnPrice = returnQuantity * newData.receive_unit_price;

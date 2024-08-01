@@ -20,12 +20,10 @@
                 <label class="font-semibold w-8rem">Make By</label>
                 <InputText id="Address" size="small" v-model="purchaseData.make_by" class="flex-auto" autocomplete="off" />
             </div>
-
             <div class="flex align-items-center gap-3 mb-1">
                 <label class="font-semibold w-8rem">Delivery Date</label>
                 <InputText id="Address" type="date" v-model="purchaseData.delivery_date" size="small" class="flex-auto" autocomplete="off" />
             </div>
-            <!-- <p>PO2024073000001</p>  -->
         </div>
     </div>
     <div>
@@ -51,23 +49,39 @@
                         </Toolbar>
                     </div>
                 </template>
-                <Column field="product_category_id.category_name" header="Category" sortable style="min-width: 12rem"></Column>
-                <Column field="product_id.product_name" header="Item Name" sortable style="min-width: 8rem"></Column>
-                <Column field="unit_price" header="Unit Of Price" sortable style="min-width: 10rem"></Column>
-                <Column field="requisition_quantity" header="Requisition Quentity" sortable style="min-width: 10rem"></Column>
-                <Column field="order_quantity" header="Order Quentity" sortable style="min-width: 10rem"></Column>
-                <Column field="total_amount" header="Total Amount" sortable style="min-width: 10rem"></Column>
-                <Column :exportable="false" header="Action" style="min-width: 12rem">
-                    <template #body="slotProps">
-                        <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editProduct(slotProps.data)" />
-                        <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteProduct(slotProps.data)" />
-                    </template>
-                </Column>
+                <div v-if="GetsearchOrderId">
+                    <Column field="product_category_id" header="Category" sortable style="min-width: 12rem"></Column>
+                    <Column field="product_id" header="Item Name" sortable style="min-width: 8rem"></Column>
+                    <Column field="unit_price" header="Unit Of Price" sortable style="min-width: 10rem"></Column>
+                    <Column field="requisition_quantity" header="Requisition Quentity" sortable style="min-width: 10rem"></Column>
+                    <Column field="order_quantity" header="Order Quentity" sortable style="min-width: 10rem"></Column>
+                    <Column field="total_amount" header="Total Amount" sortable style="min-width: 10rem"></Column>
+                    <Column :exportable="false" header="Action" style="min-width: 12rem">
+                        <template #body="slotProps">
+                            <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editProduct(slotProps.data)" />
+                            <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteProduct(slotProps.data)" />
+                        </template>
+                    </Column>
+                </div>
+                <div v-else>
+                    <Column field="product_category_id.category_name" header="Category" sortable style="min-width: 12rem"></Column>
+                    <Column field="product_id.product_name" header="Item Name" sortable style="min-width: 8rem"></Column>
+                    <Column field="unit_price" header="Unit Of Price" sortable style="min-width: 10rem"></Column>
+                    <Column field="requisition_quantity" header="Requisition Quentity" sortable style="min-width: 10rem"></Column>
+                    <Column field="order_quantity" header="Order Quentity" sortable style="min-width: 10rem"></Column>
+                    <Column field="total_amount" header="Total Amount" sortable style="min-width: 10rem"></Column>
+                    <Column :exportable="false" header="Action" style="min-width: 12rem">
+                        <template #body="slotProps">
+                            <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editProduct(slotProps.data)" />
+                            <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteProduct(slotProps.data)" />
+                        </template>
+                    </Column>
+                </div>
             </DataTable>
             <p>Total Amount: {{ this.GrandPrice }}</p>
             <div style="display: flex; justify-content: flex-end">
-                <Button label="Update Order" @click="updateOrdered()" />
-                <Button class="ml-3" style="backgroundcolor: " label="Place Order" @click="Ordered()" />
+                <Button v-if="updateOrder" label="Update Order" @click="updateOrdered()" />
+                <Button v-if="placeOrder" class="ml-3" style="backgroundcolor: " label="Place Order" @click="Ordered()" />
             </div>
         </div>
         <Dialog v-model:visible="productDialog" :style="{ width: '450px' }" header="Product Details" :modal="true">
@@ -119,14 +133,17 @@ import purchaseDetailsData from '../../models/purchaseDetails';
 import productCategoryService from '../../service/productCategory';
 import purchaseOrderData from '../../service/purchaseOrder';
 import itemService from '../../service/item';
+import { category_name, fetchData, category_namedToId, product_name } from '../../service/globalApiService';
 export default {
     data() {
         return {
             productDetailsModule: new purchaseDetailsData(),
             purchaseData: new purchaseData(),
+            GetsearchOrderId: false,
+            // NotGetsearchOrderId: false,
             visible: false,
             customers: null,
-            icondisplay: null,
+            // icondisplay: null,
             date: null,
             selectedProducts: null,
             supplierData: '',
@@ -138,11 +155,12 @@ export default {
             orderCreationId: [],
             totalCount: [],
             submitted: false,
+            placeOrder: false,
+            updateOrder: false,
             loading: true,
             productDialog: false,
             deleteProductDialog: false,
             deleteProductsDialog: false,
-
             updateButton: false,
             submitionButton: false,
             product: {},
@@ -181,18 +199,24 @@ export default {
     },
     methods: {
         searchOrderId(event) {
+            this.GetsearchOrderId = true;
             console.log(event.target.value);
-            purchaseOrderData.get_purchase_orders_details(event.target.value).then((res) => {
+            this.updateOrder = true;
+            this.placeOrder = false;
+            purchaseOrderData.get_purchase_orders_details(event.target.value).then(async (res) => {
                 console.log(res.data);
                 this.product = res.data;
                 for (let i = 0; i < this.product.length; i++) {
-                    console.log(this.product);
+                    console.log(this.product[i].product_category_id);
                     this.products.push(this.product[i]);
-                    // productCategoryService.get_product_category_by_id(this.product[i].product_category_id).then((res) => {
-                    //     this.product[i].product_category_id = res.data[0].category_name;
-                    //     // this.products.push(this.product[i]);
-                    //     console.log(this.products[i]);
-                    // });
+
+                    // product Id to product name
+                    this.result = await fetchData(this.product[i].product_id);
+                    this.products[i].product_id = this.result[0].product_name;
+
+                    // category Id to category name
+                    this.result = await category_name(this.product[i].product_category_id);
+                    this.products[i].product_category_id = this.result[0].category_name;
                 }
                 let sum = 0;
                 for (let i = 0; i < this.products.length; i++) {
@@ -203,6 +227,7 @@ export default {
         },
         saveProduct() {
             this.submitted = true;
+            this.placeOrder=true
             this.product.total_amount = this.sum;
             this.totalPrice = this.totalPrice + this.sum; //Grand price calculation
             this.totalCount.push(this.totalPrice);
@@ -211,7 +236,7 @@ export default {
             let sum = 0;
             this.products.push(this.product);
             for (let i = 0; i < this.products.length; i++) {
-                console.log(this.products[i].total_amount);
+                // console.log(this.products[i].total_amount);
                 sum = sum + this.products[i].total_amount;
                 console.log('sum', sum);
                 this.GrandPrice = sum;
@@ -248,7 +273,7 @@ export default {
                 this.purchaseData.total_amount = this.count;
                 this.purchaseData.supplier_id = this.purchaseData.supplier_id.suppliers_id;
                 this.productDetailsModule.make_by = this.purchaseData.make_by;
-                purchaseOrderData.create_purchase_order(this.purchaseData).then((res) => {
+                purchaseOrderData.create_purchase_order(this.purchaseData).then(async (res) => {
                     this.orderCreationId = res.data.result_id; //genarate order ID
 
                     // -----------------------------order details-----------------------------
@@ -257,6 +282,9 @@ export default {
                             this.productDetailsModule.order_id = this.orderCreationId;
                             this.productDetailsModule.product_category_id = this.products[i].product_category_id.category_id;
                             this.productDetailsModule.product_id = this.products[i].product_id.product_id;
+
+                            // this.productDetailsModule.product_id = this.products[i].product_id.product_id;
+                            // console.log(this.result[0].product_name);
                             this.productDetailsModule.order_quantity = this.products[i].order_quantity;
                             this.productDetailsModule.requisition_quantity = this.products[i].requisition_quantity;
                             this.productDetailsModule.unit_price = this.products[i].unit_price;
@@ -284,12 +312,20 @@ export default {
                 this.$toast.add({ severity: 'error', summary: 'Order Creation Id', detail: 'Create Order ID!', life: 3000 });
             }
         },
-        updateOrdered() {
+        async updateOrdered() {
             console.log(this.products);
             for (let i = 0; i < this.products.length; i++) {
                 this.productDetailsModule.order_id = this.products[i].order_id;
                 this.productDetailsModule.product_category_id = this.products[i].product_category_id;
+                //
+                this.result = await category_namedToId(this.productDetailsModule.product_category_id);
+                console.log(this.result);
+                this.productDetailsModule.product_category_id = this.result[0].category_id;
+                //
                 this.productDetailsModule.product_id = this.products[i].product_id;
+                this.result = await product_name(this.productDetailsModule.product_id);
+
+                this.productDetailsModule.product_id = this.result[0].product_id;
                 this.productDetailsModule.order_quantity = this.products[i].order_quantity;
                 this.productDetailsModule.requisition_quantity = this.products[i].requisition_quantity;
                 this.productDetailsModule.unit_price = this.products[i].unit_price;
@@ -304,7 +340,7 @@ export default {
                     this.productDetailsModule.loadModel('');
                     this.purchaseData.loadModel('');
                     this.products = [];
-                    location.reload();
+                    // location.reload();
                 } else {
                     this.$toast.add({ severity: 'error', summary: 'Order Details', detail: 'Same Cetagory or Item  ID!', life: 3000 });
                 }
@@ -320,6 +356,7 @@ export default {
             console.log(this.product);
             this.product = {};
             // this.product.loadModel("");
+            // this.placeOrder=true
             this.updateButton = false;
             this.submitionButton = true;
             this.submitted = false;
