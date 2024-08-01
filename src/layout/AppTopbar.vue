@@ -19,26 +19,32 @@
                 <span>Calendar</span>
             </button>
             <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
-                <i class="pi pi-user"></i>
+                <div class="dropdown" ref="displaydata">
+                    <button class="dropbtn"><i class="pi pi-user"></i></button>
+                    <div class="dropdown-content">
+                        <div>
+                            <p @click="profileButton()" class="profile"><i class="pi pi-fw pi-user profile1" style="margin-right: 5px"></i>Profile</p>
+                        </div>
+                        <div>
+                            <p @click="logOutButton()" class="profile"><i class="pi pi-sign-out" style="margin-right: 5px"></i>Log Out</p>
+                        </div>
+                        <!-- <a href="#">Log Out</a> -->
+                    </div>
+                </div>
                 <span>Profile</span>
             </button>
-            <button @click="onSettingsClick()" class="p-link layout-topbar-button">
-                <i class="pi pi-cog"></i>
-                <span>Settings</span>
-            </button>
         </div>
-        <!-- {{ localStorage.getItem('item-name') }}; -->
     </div>
-    <appMenuItem @whisperedSecret="hearSecret"></appMenuItem>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
-import appMenuItem from '../layout/AppMenuItem.vue';
 import czb_logo from '../assets/czb-logo.png';
 const { onMenuToggle } = useLayout();
+
+const displaydata = ref(false);
 
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
@@ -52,20 +58,16 @@ onBeforeUnmount(() => {
     unbindOutsideClickListener();
 });
 
-// const logoUrl = computed(() => {
-//     return `layout/images/${layoutConfig.darkTheme.value ? 'czb-logo' : 'czb-logo'}.png`;
-// });
-
+const profileButton = () => {
+    router.push('/UnitOfMeasurement/unit');
+};
+const logOutButton = () => {
+    router.push('/');
+};
 const onTopBarMenuButton = () => {
     topbarMenuActive.value = !topbarMenuActive.value;
 };
-const hearSecret = (secret) => {
-    console.log(secret);
-};
-const onSettingsClick = () => {
-    topbarMenuActive.value = false;
-    router.push('/documentation');
-};
+
 const topbarMenuClasses = computed(() => {
     return {
         'layout-topbar-menu-mobile-active': topbarMenuActive.value
@@ -98,4 +100,56 @@ const isOutsideClicked = (event) => {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped>
+.profile {
+    font-size: 13px;
+    padding: 5px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 3px;
+    margin-left: -50px;
+    width: 80%;
+}
+.dropbtn {
+    /* background-color: #04aa6d; */
+    /* color: white; */
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    border-radius: 50%;
+    width: auto;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f7f5f5;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    /* z-index: 1; */
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    /* background-color: #3e8e41; */
+}
+</style>

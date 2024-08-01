@@ -19,6 +19,7 @@ const model = ref([
     {
         label: 'Application Setup',
         items: [
+            { label: 'Test', icon: 'pi pi-fw pi-home', to: '/test' },
             { label: 'Unit Of Measurement', icon: 'pi pi-fw pi-home', to: '/unitOfMeasurement/unit' },
             { label: 'Warehouse Information', icon: 'pi pi-fw pi-box', to: '/warehouseInformation/warehouse' },
             { label: 'Product Category', icon: 'pi pi-fw pi-th-large', to: '/product/category' },

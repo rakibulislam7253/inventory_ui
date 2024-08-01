@@ -14,6 +14,11 @@ const router = createRouter({
                     component: () => import('../components/UnitOfMeasurement/unit.vue')
                 },
                 {
+                    path: '/test',
+                    name: 'test',
+                    component: () => import('../components/Purchase Order/text.vue')
+                },
+                {
                     path: '/warehouseInformation/warehouse',
                     name: 'warehouse',
                     component: () => import('../components/Warehouse_Information/warehouse.vue')

@@ -1,4 +1,37 @@
 <template>
+    <p>Requisition id order by requation product details.</p>
+    <div class="headerSection1">
+        <h4>Product Issue</h4>
+    </div>
+    <div class="headerSection">
+        <div class="flex flex-wrap gap-1">
+            <div class="flex align-items-center gap-3 mb-1">
+                <label class="font-semibold w-8rem">Branch/Division</label>
+                <InputText id="Address" size="small" class="flex-auto" autocomplete="off" />
+            </div>
+            <div class="flex align-items-center gap-3 mb-1 ml-2">
+                <label class="font-semibold w-8rem">Requisition Number</label>
+                <InputText id="Address" size="small" class="flex-auto" autocomplete="off" />
+            </div>
+            <div class="flex align-items-center gap-3 mb-1 ml-2">
+                <label class="font-semibold w-5rem">To Date</label>
+                <InputText id="Address" size="small" class="flex-auto" autocomplete="off" />
+            </div>
+            <div class="flex align-items-center gap-3 mb-1">
+                <label class="font-semibold w-8rem">Created By</label>
+                <InputText id="Address" size="small" class="flex-auto" autocomplete="off" />
+            </div>
+            <div class="flex align-items-center gap-3 mb-1 ml-2">
+                <label class="font-semibold w-8rem">From Date</label>
+                <InputText id="Address" size="small" class="flex-auto" autocomplete="off" />
+            </div>
+            <div class="flex align-items-center gap-3 mb-1 ml-2">
+                <label class="font-semibold w-5rem">Priority</label>
+                <InputText id="Address" size="small" class="flex-auto" autocomplete="off" />
+            </div>
+            <br />
+        </div>
+    </div>
     <div class="card p-fluid">
         <br />
         <Button type="button" icon="pi pi-search" label="search" style="width: 10%" @click="addUnit()" />
@@ -24,16 +57,21 @@
                 </template>
             </Column>
             <Column field="Returned Quantity" header="Approved Quantity" style="width: 20%">
-                <template #body="{ data, field }">
-                    {{ formatCurrency(data[field]) }}
+                <template #body="{ data }">
+                    {{ data.quantity }}
                 </template>
             </Column>
-            <Column field="price" header="Remarks" style="width: 20%">
-                <template #body="{ data, field }">
-                    {{ formatCurrency(data[field]) }}
+            <Column field="Remarks" header="Remarks" style="width: 20%">
+                <template #body="{ data }">
+                    {{ data.rating }}
                 </template>
             </Column>
             <Column header="Action" :rowEditor="true" style="width: 10%; min-width: 8rem" bodyStyle="text-align:center"></Column>
+            <Column header="Details" style="min-width: 10rem">
+                <template #body="{ data }">
+                    <Button type="button" style="width: 30px; height: 30px" icon="pi pi-eye" rounded @click="editUnit(data)" />
+                </template>
+            </Column>
         </DataTable>
 
         <div class="flex justify-content-evenly mt-4">
@@ -101,3 +139,21 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+.headerSection {
+    background-color: #e2e8f0;
+    padding: 10px;
+    padding-left: 45px;
+    height: auto;
+    margin-bottom: 5px;
+    border-radius: 8px;
+}
+.headerSection1 {
+    background-color: #ffffff;
+    padding: 8px;
+    height: 40px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+</style>

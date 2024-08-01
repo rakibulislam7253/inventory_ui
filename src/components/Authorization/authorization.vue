@@ -11,38 +11,21 @@
             filterDisplay="menu"
             :globalFilterFields="['name', 'country.name', 'representative.name', 'balance', 'status']"
         >
-            <template #header>
-                <div class="flex justify-content-between">
-                    <!-- <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined @click="clearFilter()" /> -->
-                    <IconField iconPosition="left">
-                        <InputIcon>
-                            <i class="pi pi-search" />
-                        </InputIcon>
-                        <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
-                        <!-- <Button icon="pi pi-external-link" class="ml-5" label="Export" @click="exportCSV($event)" /> -->
-                    </IconField>
-                    <!-- <Button type="button" icon="pi pi-plus" @click="addUnit()" /> -->
-                </div>
-            </template>
             <template #empty> No customers found. </template>
-            <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
             <Column field="category" header="Requisition No" sortable style="min-width: 14rem">
                 <template #body="{ data }">
                     {{ data.name }}
                 </template>
-                
             </Column>
             <Column field="category" header="Branch / Division" sortable style="min-width: 14rem">
                 <template #body="{ data }">
                     {{ data.name }}
                 </template>
-                
             </Column>
             <Column field="category" header="Category" sortable style="min-width: 14rem">
                 <template #body="{ data }">
                     {{ data.name }}
                 </template>
-                
             </Column>
             <Column header="Item Name" sortable sortField="representative.name" filterField="representative" :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
                 <template #body="{ data }">
