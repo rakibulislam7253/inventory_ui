@@ -49,6 +49,7 @@ export default {
         return {
             visible: false,
             customers: null,
+            date: null,
             filters: {
                 global: { value: null, matchMode: FilterMatchMode.CONTAINS },
                 name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },

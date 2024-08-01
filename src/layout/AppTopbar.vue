@@ -23,7 +23,7 @@
                     <button class="dropbtn"><i class="pi pi-user"></i></button>
                     <div class="dropdown-content">
                         <div>
-                            <p @click="profileButton()" class="profile"><i class="pi pi-fw pi-user" style="margin-right: 5px"></i>Profile</p>
+                            <p @click="profileButton()" class="profile"><i class="pi pi-fw pi-user profile1" style="margin-right: 5px"></i>Profile</p>
                         </div>
                         <div>
                             <p @click="logOutButton()" class="profile"><i class="pi pi-sign-out" style="margin-right: 5px"></i>Log Out</p>
@@ -102,6 +102,7 @@ const isOutsideClicked = (event) => {
 
 <style scoped>
 .profile {
+    font-size: 13px;
     padding: 5px;
     background: #ffffff;
     border: 1px solid #e2e8f0;

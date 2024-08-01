@@ -1,4 +1,20 @@
 <template>
+    <div class="headerSection1">
+        <h4>Product Requisition</h4>
+    </div>
+    <div class="headerSection">
+        <div class="flex flex-wrap gap-1">
+            <div class="flex align-items-center gap-3 mb-1">
+                <label class="font-semibold w-8rem">Branch/Division</label>
+                <Dropdown v-model="branchs.name" :options="branchs" optionLabel="name" placeholder="Select Branch" class="w-full md:w-20rem" />
+            </div>
+            <div class="flex align-items-center gap-3 mb-1 ml-2">
+                <label class="font-semibold w-8rem">Order Number</label>
+                <InputText id="Address" size="small" class="flex-auto" autocomplete="off" />
+            </div>
+            <br />
+        </div>
+    </div>
     <div class="card">
         <DataTable
             v-model:filters="filters"
@@ -83,6 +99,13 @@ export default {
         return {
             visible: false,
             customers: null,
+            branchs: [
+                { name: 'Principal Branch', code: '1001' },
+                { name: 'Nayanpur Bazar Branch ', code: '1002' },
+                { name: 'Narayanganj Branch', code: '1003' },
+                { name: 'Gulshan Corporate Branch', code: '1004' },
+                { name: 'Seedstore Bazar Branch', code: '1005' }
+            ],
             filters: {
                 global: { value: null, matchMode: FilterMatchMode.CONTAINS },
                 name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
@@ -172,3 +195,21 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+.headerSection {
+    background-color: #e2e8f0;
+    padding: 10px;
+    padding-left: 45px;
+    height: auto;
+    margin-bottom: 5px;
+    border-radius: 8px;
+}
+.headerSection1 {
+    background-color: #ffffff;
+    padding: 8px;
+    height: 40px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+</style>
