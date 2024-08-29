@@ -62,7 +62,7 @@ export default {
                         toast.confirmation_box(res);
                     } else {
                         this.visible = false;
-                        this.$toast.add({ severity: 'error', summary: 'Error Message', detail: 'Response not found!', life: 3000 });
+                        this.$toast.add({ severity: 'error', summary: 'Error Message', detail: 'Response not found!', life: 3500 });
                     }
                 });
             } else {
@@ -73,7 +73,8 @@ export default {
             console.log(this.unitData);
             this.unitData.auth_2nd_dt = '';
             this.unitData.auth_2nd_by = '';
-            this.unitData.last_action = '';
+            this.unitData.last_action = '2';
+            this.unitData.auth_status_id = 'U';
             unitService.create_update_unit_of_measurement(this.unitData).then((res) => {
                 console.log(res);
                 if (res.data.error_msg) {
@@ -81,6 +82,8 @@ export default {
                     toast.error_message(res.data.error_msg);
                 } else {
                     toast.confirmation_box(res);
+                    this.visible = false;
+                    this.unitData.loadModel('');
                 }
             });
         },

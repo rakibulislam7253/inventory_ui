@@ -98,9 +98,10 @@ export default {
             this.warehouseData.auth_1st_dt = '';
             this.warehouseData.auth_2nd_by = '';
             this.warehouseData.auth_2nd_dt = '';
-            this.warehouseData.last_action = '';
+            this.warehouseData.last_action = '2';
             this.warehouseData.make_by = '';
             this.warehouseData.phone_number = '';
+            this.warehouseData.branch_id = this.warehouseData.branch_id.code;
 
             warehouseService.create_update_warehouse_info(this.warehouseData).then((res) => {
                 console.log('update', res);
@@ -109,6 +110,8 @@ export default {
                     toast.error_message(res.data.error_msg);
                 } else {
                     toast.confirmation_box(res);
+                    this.visible = false;
+                    this.warehouseData.loadModel('');
                 }
                 // this.visible = false;
             });

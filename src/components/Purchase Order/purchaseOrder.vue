@@ -163,6 +163,7 @@ export default {
             deleteProductsDialog: false,
             updateButton: false,
             submitionButton: false,
+            queueId: '',
             product: {},
             filters: {},
             count: 0,
@@ -185,49 +186,71 @@ export default {
         });
         supplier.get_all_suppliers_info().then((data) => {
             this.supplierData = this.getCustomers(data.data);
-            console.log(this.supplierData);
+            // console.log(this.supplierData);
             this.loading = false;
         });
         productCategoryService.get_all_product_category().then((res) => {
             this.productCty = res.data;
-            console.log(this.productCty);
+            // console.log(this.productCty);
         });
         itemService.get_all_product_details().then((data) => {
             this.productItem = data.data;
-            console.log(this.productItem);
+            // console.log(this.productItem);
         });
     },
     methods: {
         searchOrderId(event) {
             this.GetsearchOrderId = true;
             console.log(event.target.value);
-            this.updateOrder = true;
-            this.placeOrder = false;
-            purchaseOrderData.get_purchase_orders_details(event.target.value).then(async (res) => {
+            purchaseOrderData.get_purchase_orders(event.target.value).then(async (res) => {
                 console.log(res.data);
-                this.product = res.data;
-                for (let i = 0; i < this.product.length; i++) {
-                    console.log(this.product[i].product_category_id);
-                    this.products.push(this.product[i]);
+                this.purchaseData.loadModel(res.data[0]);
+                this.purchaseData.auth_status_id = 'U';
+                this.purchaseData.last_action = '2';
+                this.purchaseData.auth_1st_by = '';
+                this.purchaseData.auth_1st_dt = '';
+                this.purchaseData.auth_2nd_by = '';
+                this.purchaseData.auth_2nd_dt = '';
+                this.purchaseData.delivery_date = '';
+                this.purchaseData.receive_date = '';
+                this.purchaseData.remarks = '';
+                this.purchaseData.requisition_id = '';
+                this.purchaseData.status_id = '';
 
-                    // product Id to product name
-                    this.result = await fetchData(this.product[i].product_id);
-                    this.products[i].product_id = this.result[0].product_name;
+                console.log(this.purchaseData);
+            }),
+                purchaseOrderData.get_purchase_orders_details(event.target.value).then(async (res) => {
+                    console.log(res.data);
+                    this.product = res.data;
+                    if (this.product != '') {
+                        this.updateOrder = true;
+                        this.placeOrder = false;
 
-                    // category Id to category name
-                    this.result = await category_name(this.product[i].product_category_id);
-                    this.products[i].product_category_id = this.result[0].category_name;
-                }
-                let sum = 0;
-                for (let i = 0; i < this.products.length; i++) {
-                    sum = sum + this.products[i].total_amount;
-                    this.GrandPrice = sum;
-                }
-            });
+                        for (let i = 0; i < this.product.length; i++) {
+                            console.log(this.product[i].product_category_id);
+                            this.products.push(this.product[i]);
+
+                            // product Id to product name
+                            this.result = await fetchData(this.product[i].product_id);
+                            this.products[i].product_id = this.result[0].product_name;
+
+                            // category Id to category name
+                            this.result = await category_name(this.product[i].product_category_id);
+                            this.products[i].product_category_id = this.result[0].category_name;
+                        }
+                        let sum = 0;
+                        for (let i = 0; i < this.products.length; i++) {
+                            sum = sum + this.products[i].total_amount;
+                            this.GrandPrice = sum;
+                        }
+                    } else {
+                        this.$toast.add({ severity: 'error', summary: 'Order Creation Id', detail: 'Purchase Order Unauthorization!', life: 3000 });
+                    }
+                });
         },
         saveProduct() {
             this.submitted = true;
-            this.placeOrder=true
+            this.placeOrder = true;
             this.product.total_amount = this.sum;
             this.totalPrice = this.totalPrice + this.sum; //Grand price calculation
             this.totalCount.push(this.totalPrice);
@@ -274,7 +297,8 @@ export default {
                 this.purchaseData.supplier_id = this.purchaseData.supplier_id.suppliers_id;
                 this.productDetailsModule.make_by = this.purchaseData.make_by;
                 purchaseOrderData.create_purchase_order(this.purchaseData).then(async (res) => {
-                    this.orderCreationId = res.data.result_id; //genarate order ID
+                    this.orderCreationId = res.data.result_id; //order ID genarate
+                    console.log(res.data);
 
                     // -----------------------------order details-----------------------------
                     if (this.orderCreationId) {
@@ -282,26 +306,26 @@ export default {
                             this.productDetailsModule.order_id = this.orderCreationId;
                             this.productDetailsModule.product_category_id = this.products[i].product_category_id.category_id;
                             this.productDetailsModule.product_id = this.products[i].product_id.product_id;
-
-                            // this.productDetailsModule.product_id = this.products[i].product_id.product_id;
-                            // console.log(this.result[0].product_name);
                             this.productDetailsModule.order_quantity = this.products[i].order_quantity;
                             this.productDetailsModule.requisition_quantity = this.products[i].requisition_quantity;
                             this.productDetailsModule.unit_price = this.products[i].unit_price;
                             this.productDetailsModule.total_amount = this.products[i].total_amount;
+                            this.productDetailsModule.last_action = res.data.status_code;
+                            this.productDetailsModule.queue_id = res.data.result_guid;
                             this.detailspush.push({ ...this.productDetailsModule }); //array of object creation
                         }
                         console.log(this.detailspush);
                         // order details successfully
                         purchaseOrderData.create_purchase_order_details(this.detailspush).then((res) => {
+                            console.log(res.data);
                             if (res.data.result_id) {
                                 this.$toast.add({ severity: 'success', summary: 'Order Details', detail: 'Successful Order', life: 3000 });
                                 this.productDetailsModule.loadModel('');
                                 this.purchaseData.loadModel('');
                                 this.products = [];
-                                location.reload();
+                                // location.reload();
                             } else {
-                                this.$toast.add({ severity: 'error', summary: 'Order Details', detail: 'Same Cetagory or Item  ID!', life: 3000 });
+                                this.$toast.add({ severity: 'error', summary: 'Order Details', detail: 'Same Item  ID!', life: 3000 });
                             }
                         });
                     } else {
@@ -314,40 +338,52 @@ export default {
         },
         async updateOrdered() {
             console.log(this.products);
+            this.purchaseData.auth_status_id = 'U';
+            this.purchaseData.last_action = '2';
             for (let i = 0; i < this.products.length; i++) {
-                this.productDetailsModule.order_id = this.products[i].order_id;
-                this.productDetailsModule.product_category_id = this.products[i].product_category_id;
-                //
-                this.result = await category_namedToId(this.productDetailsModule.product_category_id);
-                console.log(this.result);
-                this.productDetailsModule.product_category_id = this.result[0].category_id;
-                //
-                this.productDetailsModule.product_id = this.products[i].product_id;
-                this.result = await product_name(this.productDetailsModule.product_id);
-
-                this.productDetailsModule.product_id = this.result[0].product_id;
-                this.productDetailsModule.order_quantity = this.products[i].order_quantity;
-                this.productDetailsModule.requisition_quantity = this.products[i].requisition_quantity;
-                this.productDetailsModule.unit_price = this.products[i].unit_price;
-                this.productDetailsModule.total_amount = this.products[i].total_amount;
-                this.detailspush.push({ ...this.productDetailsModule }); //array of object creation
+                this.count = this.count + this.products[i].total_amount;
             }
-            console.log(this.detailspush);
-            purchaseOrderData.create_purchase_order_details(this.detailspush).then((res) => {
+            this.purchaseData.total_amount = this.count;
+            console.log(this.purchaseData);
+            purchaseOrderData.create_purchase_order(this.purchaseData).then(async (res) => {
                 console.log(res.data);
-                if (res.data.result_id) {
-                    this.$toast.add({ severity: 'success', summary: 'Update Order', detail: 'Update Successful', life: 3000 });
-                    this.productDetailsModule.loadModel('');
-                    this.purchaseData.loadModel('');
-                    this.products = [];
-                    // location.reload();
-                } else {
-                    this.$toast.add({ severity: 'error', summary: 'Order Details', detail: 'Same Cetagory or Item  ID!', life: 3000 });
-                }
-            });
-            // this.$toast.add({ severity: 'error', summary: 'Order Creation Id', detail: 'Create Order ID!', life: 3000 });
-        },
 
+                for (let i = 0; i < this.products.length; i++) {
+                    this.productDetailsModule.queue_id = res.data.result_guid;
+                    console.log(this.productDetailsModule.queue_id);
+                    console.log(this.productDetailsModule);
+                    this.productDetailsModule.order_id = this.products[i].order_id;
+                    this.productDetailsModule.product_category_id = this.products[i].product_category_id;
+                    //category_namedToId
+                    this.result = await category_namedToId(this.productDetailsModule.product_category_id);
+                    this.productDetailsModule.product_category_id = this.result[0].category_id;
+                    //product_namedToId
+                    this.productDetailsModule.product_id = this.products[i].product_id;
+                    this.result = await product_name(this.productDetailsModule.product_id);
+                    this.productDetailsModule.product_id = this.result[0].product_id;
+                    this.productDetailsModule.order_quantity = this.products[i].order_quantity;
+                    this.productDetailsModule.requisition_quantity = this.products[i].requisition_quantity;
+                    this.productDetailsModule.unit_price = this.products[i].unit_price;
+                    this.productDetailsModule.total_amount = this.products[i].total_amount;
+                    this.productDetailsModule.last_action = '2';
+                    this.productDetailsModule.auth_status_id = 'U';
+                    this.detailspush.push({ ...this.productDetailsModule }); //array of object creation
+                }
+                console.log(this.detailspush);
+                purchaseOrderData.create_purchase_order_details(this.detailspush).then((res) => {
+                    console.log(res.data);
+                    if (res.data.result_id) {
+                        this.$toast.add({ severity: 'success', summary: 'Update Order', detail: 'Update Successful', life: 3000 });
+                        this.productDetailsModule.loadModel('');
+                        this.purchaseData.loadModel('');
+                        this.products = [];
+                        // location.reload();
+                    } else {
+                        this.$toast.add({ severity: 'error', summary: 'Order Details', detail: 'Same Cetagory or Item  ID!', life: 3000 });
+                    }
+                });
+            });
+        },
         formatCurrency(value) {
             if (value) return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
             return;

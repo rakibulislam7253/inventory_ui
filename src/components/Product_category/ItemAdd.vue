@@ -117,11 +117,30 @@ export default {
         },
         updateItem() {
             console.log(this.itemData);
+            if (this.itemData.unit_id) {
+                this.itemData.unit_id = this.itemData.unit_id.unit_id;
+            } else {
+                this.itemData.unit_id = '';
+            }
+
+            if (this.itemData.category_id) {
+                this.itemData.category_id = this.itemData.category_id.category_id;
+            } else {
+                this.itemData.category_id = '';
+            }
+
+            if (this.itemData.warehouse_id) {
+                this.itemData.warehouse_id = this.itemData.warehouse_id.warehouse_id;
+            } else {
+                this.itemData.warehouse_id = '';
+            }
+            // this.itemData.category_id = this.itemData.category_id.category_id;
+            // this.itemData.warehouse_id = this.itemData.warehouse_id.warehouse_id;
             this.itemData.auth_1st_by = '';
             this.itemData.auth_1st_dt = '';
             this.itemData.auth_2nd_by = '';
             this.itemData.auth_2nd_dt = '';
-            this.itemData.last_action = '';
+            this.itemData.last_action = '2';
             this.itemData.make_by = '';
             itemService.create_update_product_details(this.itemData).then((res) => {
                 console.log('updateItem', res);
@@ -131,7 +150,10 @@ export default {
                         toast.error_message(res.data.error_msg);
                         this.itemData.loadModel('');
                     } else {
+                        console.log(res);
                         toast.confirmation_box(res);
+                        this.visible = false;
+                        this.itemData.loadModel('');
                     }
                 }
             });
