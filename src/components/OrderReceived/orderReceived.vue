@@ -34,7 +34,7 @@
         <DataTable v-model:editingRows="editingRows" :value="products" editMode="row" dataKey="id" @row-edit-save="onRowEditSave">
             <Column field="product_id" header="Item Name" style="width: 20%">
                 <template #body="{ data }">
-                    {{ data.product_name }}
+                    {{ data.product_id }}
                 </template>
             </Column>
             <Column field="order_quantity" header="Unit Price" style="width: 20%">
@@ -99,11 +99,12 @@
 </template>
 
 <script>
-import purchaseOrderData from '../../service/purchaseOrder';
+// import productIssue from '../../service/productRequsition';
+import productdetails from '../../service/purchaseOrder';
 import orderReceiveData from '../../models/orderReceived';
 import purchaseReceive from '../../models/createPurchaseReceiveDetails';
 import { fetchData } from '../../service/globalApiService';
-import { supplierData } from '../../service/globalApiService';
+import { supplierData, product_name } from '../../service/globalApiService';
 export default {
     data() {
         return {
@@ -114,6 +115,7 @@ export default {
             editingRows: [],
             purchase: '',
             purchaseData: [],
+            detailspush: [],
             supplierName: '',
             result: '',
             param1: 'PROD00001',
@@ -129,40 +131,77 @@ export default {
         async searchOrderId(event) {
             console.log(event.target.value);
 
-            purchaseOrderData.get_order_details_by_id(event.target.value).then(async (data) => {
+            productdetails.get_order_details_by_id(event.target.value).then(async (data) => {
                 console.log(data.data);
                 this.orderReceiveData.loadModel(data.data);
+                console.log(this.orderReceiveData.purchase_order_details);
                 if (this.orderReceiveData.order_id) {
                     this.submitionButton = true;
                 }
-                // supplier id to supplier name function
-                this.supplierName = await supplierData(this.orderReceiveData.supplier_id);
-                this.orderReceiveData.supplier_id = this.supplierName[0].suppliers_name;
-                console.log(this.supplierName[0].suppliers_name);
-                this.purchase = this.orderReceiveData.purchase_order_details;
+                if (this.orderReceiveData.purchase_order_details.length) {
+                    // supplier id to supplier name function
+                    this.supplierName = await supplierData(this.orderReceiveData.supplier_id);
+                    this.orderReceiveData.supplier_id = this.supplierName[0].suppliers_name;
+                    console.log(this.supplierName[0].suppliers_name);
+                    this.purchase = this.orderReceiveData.purchase_order_details;
 
-                for (let i = 0; i < this.purchase.length; i++) {
-                    this.purchaseReceive.order_id = this.purchase[i].order_id;
-                    this.purchaseReceive.product_id = this.purchase[i].product_id;
-                    // product id to product name function
-                    this.result = await fetchData(this.purchaseReceive.product_id);
-                    this.purchaseReceive.product_name = this.result[0].product_name;
-                    this.purchaseReceive.receive_unit_price = this.purchase[i].unit_price;
-                    this.purchaseReceive.order_quantity = this.purchase[i].order_quantity;
-                    // this.purchaseReceive.receive_quantity = 20;
-                    console.log(this.purchaseReceive.receive_quantity);
-                    // this.purchaseReceive.return_quantity = this.purchaseReceive.order_quantity - this.purchaseReceive.receive_quantity;
-                    this.purchaseReceive.receive_amount = this.purchase[i].total_amount;
-                    this.products.push({ ...this.purchaseReceive });
+                    for (let i = 0; i < this.purchase.length; i++) {
+                        console.log(this.purchase[i]);
+                        this.purchaseReceive.order_id = this.purchase[i].order_id;
+                        this.purchaseReceive.product_id = this.purchase[i].product_id;
+                        // product id to product name function
+                        this.result = await fetchData(this.purchaseReceive.product_id);
+                        this.purchaseReceive.product_id = this.result[0].product_name;
+                        this.purchaseReceive.receive_unit_price = this.purchase[i].unit_price;
+                        this.purchaseReceive.order_quantity = this.purchase[i].order_quantity;
+                        // this.purchaseReceive.receive_quantity = 20;
+                        console.log(this.purchaseReceive.receive_quantity);
+                        // this.purchaseReceive.return_quantity = this.purchaseReceive.order_quantity - this.purchaseReceive.receive_quantity;
+                        this.purchaseReceive.receive_amount = this.purchase[i].total_amount;
+                        this.products.push({ ...this.purchaseReceive });
+                    }
+                } else {
+                    this.$toast.add({ severity: 'error', summary: 'Unauthorization', detail: 'Order Details Unauthorized', life: 3500 });
                 }
             });
         },
 
-        ordered() {
-            console.log(this.purchaseReceive);
+        async ordered() {
+            // console.log(this.purchaseReceive);
             console.log(this.products);
-            purchaseOrderData.create_purchase_receive_details(this.products).then((data) => {
+            // for(let i = 0; i < this.products.length; i++) {
+
+            // }
+            for (let i = 0; i < this.products.length; i++) {
+                this.purchaseReceive.order_id = this.products[i].order_id;
+                this.purchaseReceive.product_id = this.products[i].product_id;
+                this.result = await product_name(this.purchaseReceive.product_id);
+                this.purchaseReceive.product_id = this.result[0].product_id;
+                console.log(this.purchaseReceive.product_id);
+                this.purchaseReceive.order_quantity = this.products[i].order_quantity;
+                this.purchaseReceive.receive_quantity = this.products[i].receive_quantity;
+                this.purchaseReceive.receive_amount = this.products[i].receive_amount;
+                this.purchaseReceive.return_quantity = this.products[i].return_quantity;
+                this.purchaseReceive.return_amount = this.products[i].return_amount;
+                this.purchaseReceive.receive_unit_price = this.products[i].receive_unit_price;
+                this.purchaseReceive.total_amount = this.products[i].receive_amount;
+                this.purchaseReceive.last_action = '1';
+                // this.purchaseReceive.last_action = ;
+                this.detailspush.push({ ...this.purchaseReceive }); //array of object creation
+            }
+            console.log(this.detailspush);
+            productdetails.create_purchase_receive_details(this.detailspush).then((data) => {
                 console.log(data.data);
+
+                if (data.data.result_id) {
+                    this.$toast.add({ severity: 'success', summary: 'Purchase Receive Details', detail: 'Successful Order Receive', life: 3000 });
+                    this.orderReceiveData.loadModel('');
+                    this.purchaseReceive.loadModel('');
+                    this.products = [];
+                    // location.reload();
+                } else {
+                    this.$toast.add({ severity: 'error', summary: 'Order Details', detail: ' Product Already Received', life: 3000 });
+                }
             });
         },
         onRowEditSave(event) {
@@ -179,6 +218,7 @@ export default {
                 }
             } else {
                 this.$toast.add({ severity: 'error', summary: 'Order Creation Id', detail: 'Received Quentity must be lessthen or equal Order Quentity', life: 4000 });
+                newData.receive_quantity = newData.order_quantity;
             }
             // console.log(multy);
 

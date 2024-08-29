@@ -66,12 +66,14 @@ export default {
                     } else {
                         this.visible = false;
                         this.$toast.add({ severity: 'error', summary: 'Error Message', detail: 'Response not found!', life: 3000 });
+                        this.supplierData.loadModel('');
                         // toast.error_message('Response not found!');
                     }
                 } else {
                     // this.visible = false;
                     this.$toast.add({ severity: 'error', summary: 'Input Required', detail: 'Please Insert Supplier Name', life: 3000 });
-                    // toast.error_message('Response not found!');
+                    this.supplierData.loadModel('');
+                    this.visible = false;
                 }
                 this.loading = false;
             });
@@ -81,7 +83,7 @@ export default {
             this.supplierData.auth_1st_dt = '';
             this.supplierData.auth_2nd_by = '';
             this.supplierData.auth_2nd_dt = '';
-            this.supplierData.last_action = '';
+            this.supplierData.last_action = '2';
             this.supplierData.make_by = '';
             this.supplierData.website = '';
             this.supplierData.contact_person = '';
@@ -95,6 +97,7 @@ export default {
                         this.supplierData.loadModel('');
                     } else {
                         toast.confirmation_box(res);
+                        this.supplierData.loadModel('');
                     }
                 }
                 this.loading = false;

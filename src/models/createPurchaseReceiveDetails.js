@@ -14,7 +14,6 @@ export default class purchaseReceive {
         this.receive_id = '';
         this.order_id = '';
         this.product_id = '';
-        this.product_name = '';
         this.order_quantity = 0;
         this.receive_unit_price = 0;
         this.receive_quantity = 0;

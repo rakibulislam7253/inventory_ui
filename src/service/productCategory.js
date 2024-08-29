@@ -1,6 +1,6 @@
 import axios from 'axios';
 // http://10.140.6.22/inventory_api/api/ProductCategory/get_all_product_category
-// http://10.140.6.22/inventory_api/api/ProductCategory/create_update_warehouse_info
+// http://10.140.6.22/inventory_api/api/ProductCategory/create_update_product_category
 // http://10.140.6.22/inventory_api/api/ProductCategory/get_product_category_by_id?category_id=PCAT00001
 const BASE_URL = 'http://10.140.6.22/inventory_api/api/ProductCategory/';
 class productCategoryService {

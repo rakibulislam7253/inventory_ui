@@ -48,15 +48,15 @@ export default {
     },
     methods: {
         updateCategory() {
-            console.log(this.productCategory);
             this.productCategory.auth_1st_by = '';
             this.productCategory.auth_1st_dt = '';
             this.productCategory.auth_2nd_by = '';
             this.productCategory.auth_2nd_dt = '';
-            this.productCategory.last_action = '';
+            this.productCategory.last_action = '2';
             this.productCategory.make_by = '';
-
-            productCategoryData.create_update_warehouse_info(this.productCategory).then((res) => {
+            this.productCategory.auth_status_id = 'U';
+            console.log(this.productCategory);
+            productCategoryData.create_update_product_category(this.productCategory).then((res) => {
                 console.log('update', res);
                 if (res.data.error_msg) {
                     this.visible = false;
@@ -64,8 +64,9 @@ export default {
                     this.itemData.loadModel('');
                 } else {
                     toast.confirmation_box(res);
+                    this.visible = false;
+                    this.productCategory.loadModel('');
                 }
-                // this.visible = false;
             });
         },
         addCategory() {
