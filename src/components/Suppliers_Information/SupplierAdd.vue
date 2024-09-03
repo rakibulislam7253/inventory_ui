@@ -22,7 +22,7 @@
             </div>
             <div class="flex align-items-center gap-3 mb-3">
                 <label class="font-semibold w-6rem">Contact</label>
-                <InputText id="Address" v-model="supplierData.phone_number" class="flex-auto" autocomplete="off" />
+                <InputText id="Address" v-model="supplierData.phone_number" placeholder="+880xxxx-xxxxxx" class="flex-auto" autocomplete="off" />
             </div>
             <div class="flex align-items-center gap-3 mb-3">
                 <label class="font-semibold w-6rem">Email</label>

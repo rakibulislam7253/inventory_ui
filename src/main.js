@@ -7,7 +7,6 @@ import UserService from '../src/service/user.service';
 import GlobalConstants from '../src/common/GlobalConstant';
 import GlobalFunction from '../src/common/GlobalFunction';
 import LogoutFunction from '../src/common/logout';
-
 import PrimeVue from 'primevue/config';
 import AutoComplete from 'primevue/autocomplete';
 import Accordion from 'primevue/accordion';
