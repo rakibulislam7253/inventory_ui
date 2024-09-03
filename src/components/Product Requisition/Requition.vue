@@ -157,6 +157,7 @@ import productCategoryService from '../../service/productCategory';
 // import purchaseOrderData from '../../service/purchaseOrder';
 import product_requisition from '../../service/productRequsition';
 import itemService from '../../service/item';
+import GlobalFunctions from '../../common/GlobalFunction';
 import { category_name, fetchData, category_namedToId, product_name } from '../../service/globalApiService';
 export default {
     data() {
@@ -308,6 +309,10 @@ export default {
             // this.productRequisition.status_id="1";
             console.log(this.productRequisition);
             this.productRequisition.warehouse_id = this.productRequisition.warehouse_id.warehouse_id;
+
+            let time = GlobalFunctions.formatDate(this.productRequisition.tntv_dlvry_date);
+            this.productRequisition.tntv_dlvry_date = time;
+            console.log(this.productRequisition);
             if (this.productRequisition.warehouse_id) {
                 // -----------------------------requisition create-------------------------
                 product_requisition.create_product_requisition(this.productRequisition).then((res) => {

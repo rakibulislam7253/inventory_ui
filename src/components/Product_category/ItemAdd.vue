@@ -116,32 +116,31 @@ export default {
             });
         },
         updateItem() {
-            console.log(this.itemData);
-            if (this.itemData.unit_id) {
-                this.itemData.unit_id = this.itemData.unit_id.unit_id;
-            } else {
+            console.log(this.itemData.unit_id);
+            console.log(this.itemData.category_id);
+            console.log(this.itemData.warehouse_id);
+            if (this.itemData.unit_id == '') {
                 this.itemData.unit_id = '';
             }
+            // else {
+            //     this.itemData.unit_id = '';
+            // }
 
-            if (this.itemData.category_id) {
-                this.itemData.category_id = this.itemData.category_id.category_id;
-            } else {
+            if (this.itemData.category_id == '') {
                 this.itemData.category_id = '';
             }
 
-            if (this.itemData.warehouse_id) {
-                this.itemData.warehouse_id = this.itemData.warehouse_id.warehouse_id;
-            } else {
+            if (this.itemData.warehouse_id == '') {
                 this.itemData.warehouse_id = '';
             }
-            // this.itemData.category_id = this.itemData.category_id.category_id;
-            // this.itemData.warehouse_id = this.itemData.warehouse_id.warehouse_id;
             this.itemData.auth_1st_by = '';
             this.itemData.auth_1st_dt = '';
             this.itemData.auth_2nd_by = '';
             this.itemData.auth_2nd_dt = '';
             this.itemData.last_action = '2';
             this.itemData.make_by = '';
+            this.itemData.auth_status_id = 'U';
+            console.log(this.itemData);
             itemService.create_update_product_details(this.itemData).then((res) => {
                 console.log('updateItem', res);
                 if (res) {
@@ -166,6 +165,7 @@ export default {
             if (data.product_id) {
                 this.visible = true;
                 this.itemData.loadModel(data);
+                console.log(this.itemData);
                 // console.log('get data', this.itemData);
             } else {
                 this.visible = true;
