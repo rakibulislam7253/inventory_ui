@@ -2,7 +2,7 @@
     <div class="layout-footer">
         <img :src="czb_logo" alt="Logo" height="20" class="mr-2" />
         Developed By
-        <span class="font-medium ml-2">ICT`s In-House Software</span>
+        <span class="font-medium ml-2">ICT Divition</span>
     </div>
 </template>
 

@@ -58,12 +58,12 @@ export default {
             console.log(this.productCategory);
             productCategoryData.create_update_product_category(this.productCategory).then((res) => {
                 console.log('update', res);
-                if (res.data.error_msg) {
+                if (res.data.status_code == 2) {
                     this.visible = false;
-                    toast.error_message(res.data.error_msg);
+                    toast.confirmation_box(res);
                     this.itemData.loadModel('');
                 } else {
-                    toast.confirmation_box(res);
+                    toast.confirmation_box(res.data.error_msg);
                     this.visible = false;
                     this.productCategory.loadModel('');
                 }

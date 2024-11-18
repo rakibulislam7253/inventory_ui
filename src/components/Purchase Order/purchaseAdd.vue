@@ -37,10 +37,6 @@
                 <label class="font-semibold w-6rem">Order Quantity</label>
                 <InputText id="Email" v-model="purchaseData.order_quantity" class="flex-auto" autocomplete="off" />
             </div>
-            <!-- <div class="flex align-items-center gap-3 mb-3">
-                <label class="font-semibold w-6rem">UOM</label>
-                <InputText id="Email" v-model="purchaseData." class="flex-auto" autocomplete="off" />
-            </div> -->
             <div class="flex align-items-center gap-3 mb-3">
                 <label class="font-semibold w-6rem">Total Amount</label>
                 <InputText id="Email" v-model="purchaseData.total_amount" class="flex-auto" autocomplete="off" />
@@ -60,11 +56,7 @@
 </template>
 <script>
 import purchaseDetailsData from '../../models/purchaseDetails';
-// import testing from '../uikit/Testing.vue';
-// import { ref } from 'vue';
-// const childToParent = ref(0);
 export default {
-    // components: { testing },
     data() {
         return {
             purchaseData: new purchaseDetailsData(),
@@ -73,11 +65,6 @@ export default {
         };
     },
     methods: {
-        // childData(PermissionData) {
-        //     this.$emit('reload', { mydata: 'item.id' });
-        //     console.log('selection data: ', PermissionData);
-        //     // this.$refs.PermissionData.childToParent(PermissionData);
-        // },
         savedata(purchaseData) {
             this.$emit('reload', { mydata: purchaseData });
         },

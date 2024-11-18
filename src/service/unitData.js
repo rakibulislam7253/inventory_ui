@@ -1,13 +1,12 @@
 import axios from 'axios';
-// http://10.140.6.22/inventory_api/api/UnitOfMeasurement/create_update_unit_of_measurement
-const BASE_URL = 'http://10.140.6.22/inventory_api/api/UnitOfMeasurement/';
+const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 class UnitService {
     get_all_unit_of_measurements() {
-        return axios.get(BASE_URL + 'get_all_unit_of_measurements');
+        return axios.get(BASE_URL + '/api/UnitOfMeasurement/get_all_unit_of_measurements');
     }
     create_update_unit_of_measurement(unitData) {
         console.log(unitData);
-        return axios.post(BASE_URL + 'create_update_unit_of_measurement', unitData);
+        return axios.post(BASE_URL + '/api/UnitOfMeasurement/create_update_unit_of_measurement', unitData);
     }
 }
 
