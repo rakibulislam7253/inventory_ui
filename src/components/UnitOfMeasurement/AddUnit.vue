@@ -12,59 +12,99 @@
                 }
             }"
         >
-            <span class="p-text-secondary block mb-5">{{ unitData.id ? 'Update Unit information.' : 'Add Unit information.' }}</span>
+            <span class="p-text-secondary block mb-5">{{ unitData.unit_id ? 'Update Unit information.' : 'Add Unit information.' }}</span>
             <div class="flex align-items-center gap-3 mb-3">
                 <label for="Name" class="font-semibold w-6rem">Name</label>
-                <InputText v-model="unitData.id" id="username" class="flex-auto" autocomplete="off" />
+                <InputText type="text" v-model="unitData.unit_name" id="username" class="flex-auto" />
             </div>
             <div class="flex align-items-center gap-3 mb-5">
                 <label for="country" class="font-semibold w-6rem">Description</label>
-                <InputText id="Description" class="flex-auto" autocomplete="off" />
+                <InputText id="Description" v-model="unitData.unit_description" class="flex-auto" />
             </div>
             <div class="flex justify-content-end gap-2">
-                <Button type="button" label="Cancel" severity="secondary" @click="modalClose"></Button>
-                <div v-if="unitData.id">
-                    <Button type="button" label="Update" @click="visible = false"></Button>
+                <Button type="button" label="Cancel" severity="secondary" @click="modalClose()"></Button>
+                <div v-if="unitData.unit_id">
+                    <Button type="button" label="Update" @click="updateUnit()"></Button>
                 </div>
                 <div v-else>
-                    <Button type="button" label="Save" @click="visible = false"></Button>
+                    <Button type="button" label="Save" @click="addUnit()"></Button>
                 </div>
             </div>
         </Dialog>
-        <!-- <Button type="button" label="Cancel" severity="secondary" @click="childData('childToParent data')">Child to Parent</Button> -->
     </div>
 </template>
 <script>
-// import testing from '../uikit/Testing.vue';
-// import { ref } from 'vue';
-// const childToParent = ref(0);
+import Unit_Info from '../../models/unit';
+import unitService from '../../service/unitData';
+import toast from '../../common/toast';
+// import sweet_alert from "@/common/sweet";
 export default {
     // components: { testing },
+
     data() {
         return {
+            unitData: new Unit_Info(),
             visible: false,
-            unitData: ''
+            unit_name: ''
         };
     },
     methods: {
-        childData(PermissionData) {
-            this.$emit('reload', { mydata: 'item.id' });
-            console.log('selection data: ', PermissionData);
-            // this.$refs.PermissionData.childToParent(PermissionData);
-        },
-        updatePermission(data) {
-            this.unitData = data;
-            if (this.unitData) {
-                this.visible = true;
+        addUnit() {
+            console.log(this.unitData);
+            if (this.unitData.unit_name) {
+                unitService.create_update_unit_of_measurement(this.unitData).then((res) => {
+                    console.log(res);
+
+                    if (res.data.status_code == 1) {
+                        this.visible = false;
+                        this.$emit('whisperedSecret');
+                        this.unitData.loadModel('');
+                        toast.confirmation_box(res);
+                    } else {
+                        this.visible = false;
+                        this.$toast.add({ severity: 'error', summary: 'Error Message', detail: 'Response not found!', life: 3500 });
+                    }
+                });
             } else {
-                console.log('child data', this.unitData);
+                this.$toast.add({ severity: 'error', summary: 'Input Required', detail: 'Please insert Unit Name!', life: 3000 });
+            }
+        },
+        updateUnit() {
+            console.log(this.unitData);
+            this.unitData.auth_2nd_dt = '';
+            this.unitData.auth_2nd_by = '';
+            this.unitData.last_action = '2';
+            this.unitData.auth_status_id = 'U';
+            unitService.create_update_unit_of_measurement(this.unitData).then((res) => {
+                console.log(res);
+                if (res.data.error_msg) {
+                    this.visible = false;
+                    toast.error_message(res.data.error_msg);
+                } else {
+                    toast.confirmation_box(res);
+                    this.visible = false;
+                    this.unitData.loadModel('');
+                }
+            });
+        },
+
+        updatePermission(data) {
+            // console.log(data);
+            if (data.unit_id) {
                 this.visible = true;
+                this.unitData.loadModel(data);
+                console.log('get data', this.unitData);
+            } else {
+                this.visible = true;
+                console.log('get data1', this.unitData);
             }
         },
         modalClose() {
             this.visible = false;
             this.unitData = '';
+            this.unitData.loadModel('');
         }
     }
 };
 </script>
+../../common/toast

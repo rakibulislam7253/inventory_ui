@@ -1,22 +1,8 @@
 <template>
     <div class="card">
-        <DataTable
-            v-model:filters="filters"
-            ref="dt"
-            v-model:selection="selectedCustomers"
-            :value="customers"
-            paginator
-            :rows="10"
-            dataKey="id"
-            filterDisplay="menu"
-            :globalFilterFields="['name', 'country.name', 'representative.name', 'balance', 'status']"
-        >
+        <DataTable v-model:filters="filters" ref="dt" v-model:selection="selectedCustomers" :value="customers" paginator :rows="10" dataKey="id" filterDisplay="menu" :globalFilterFields="['warehouse_name', 'description', 'address', 'email']">
             <template #header>
-                <!-- <div style="text-align: left">
-                    <Button icon="pi pi-external-link" label="Export" @click="exportCSV($event)" />
-                </div> -->
                 <div class="flex justify-content-between">
-                    <!-- <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined @click="clearFilter()" /> -->
                     <IconField iconPosition="left">
                         <InputIcon>
                             <i class="pi pi-search" />
@@ -28,70 +14,46 @@
                 </div>
             </template>
             <template #empty> No customers found. </template>
-            <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
-            <Column field="name" header="Name" sortable style="min-width: 14rem">
+            <Column field="warehouse_name" header="Name" sortable sortField="warehouse_name" filterField="warehouse_name" style="min-width: 14rem">
                 <template #body="{ data }">
-                    {{ data.name }}
-                </template>
-                <template #filter="{ filterModel }">
-                    <InputText v-model="filterModel.value" type="text" class="p-column-filter" placeholder="Search by name" />
+                    {{ data.warehouse_name }}
                 </template>
             </Column>
-            <Column header="Description" sortable sortField="country.name" filterField="country.name" style="min-width: 14rem">
+            <Column field="description" header="Description" sortable sortField="description" filterField="description" style="min-width: 14rem">
                 <template #body="{ data }">
                     <div class="flex align-items-center gap-2">
-                        <img alt="flag" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`flag flag-${data.country.code}`" style="width: 24px" />
-                        <span>{{ data.country.name }}</span>
+                        <span>{{ data.description }}</span>
                     </div>
                 </template>
-                <template #filter="{ filterModel }">
-                    <InputText v-model="filterModel.value" type="text" class="p-column-filter" placeholder="Search by country" />
-                </template>
             </Column>
-            <Column header="Location" sortable sortField="representative.name" filterField="representative" :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
+            <Column field="address" header="Location" sortable sortField="address" filterField="address" :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
                 <template #body="{ data }">
                     <div class="flex align-items-center gap-2">
-                        <img :alt="data.representative.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${data.representative.image}`" style="width: 32px" />
-                        <span>{{ data.representative.name }}</span>
+                        <span>{{ data.address }}</span>
                     </div>
                 </template>
-                <template #filter="{ filterModel }">
-                    <MultiSelect v-model="filterModel.value" :options="representatives" optionLabel="name" placeholder="Any" class="p-column-filter">
-                        <template #option="slotProps">
-                            <div class="flex align-items-center gap-2">
-                                <img :alt="slotProps.option.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${slotProps.option.image}`" style="width: 32px" />
-                                <span>{{ slotProps.option.name }}</span>
-                            </div>
-                        </template>
-                    </MultiSelect>
-                </template>
             </Column>
-            <Column field="date" header="Email" sortable filterField="date" dataType="date" style="min-width: 10rem">
+            <Column field="email" header="Email" sortable sortField="email" filterField="email" style="min-width: 10rem">
                 <template #body="{ data }">
-                    {{ formatDate(data.date) }}
-                </template>
-                <template #filter="{ filterModel }">
-                    <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />
+                    <span>{{ data.email }}</span>
                 </template>
             </Column>
 
-            <Column field="activity" header="Activity" style="min-width: 5rem">
+            <Column header="Activity" style="min-width: 5rem">
                 <template #body="{ data }">
-                    <Button type="button" icon="pi pi-pencil" rounded square @click="editUnit(data)" />
-                    <Button type="button" icon="pi pi-trash" class="ml-2" rounded square @click="editUnit(data)" />
+                    <Button type="button" style="width: 30px; height: 30px" icon="pi pi-pencil" rounded @click="editUnit(data)" />
+                    <Button type="button" style="width: 30px; height: 30px" icon="pi pi-trash" severity="danger" class="ml-2" rounded @click="editUnit(data)" />
                 </template>
             </Column>
         </DataTable>
-
-        <!-- <Button label="Show" @click="visible = true" /> -->
     </div>
     <!----------------------------- dialog ---------------------------------------------------->
-    <warehouseAdd ref="PermissionData" @reload="getReload" />
+    <warehouseAdd style="border: none; background-color: #f5f9ff" ref="PermissionData" @whisperedSecret="hearSecret" />
 </template>
 
 <script>
 import { FilterMatchMode } from 'primevue/api';
-import { CustomerService } from '../../service/servicesData';
+import warehouseService from '../../service/warehouseData';
 import warehouseAdd from '../../components/Warehouse_Information/warehouseAdd.vue';
 import { ref } from 'vue';
 const PermissionData = ref(0);
@@ -126,17 +88,23 @@ export default {
         };
     },
     mounted() {
-        CustomerService.getCustomersMedium().then((data) => {
-            this.customers = this.getCustomers(data);
+        warehouseService.get_all_warehouse_info().then((data) => {
+            this.customers = this.getCustomers(data.data);
+            console.log(this.customers);
             this.loading = false;
         });
     },
+
     methods: {
         exportCSV() {
             this.$refs.dt.exportCSV();
         },
-        getReload(PermissionData) {
-            console.log('come from child to parent data ', PermissionData.mydata);
+        hearSecret() {
+            warehouseService.get_all_warehouse_info().then((data) => {
+                this.customers = this.getCustomers(data.data);
+                console.log(this.customers);
+                this.loading = false;
+            });
         },
         editUnit(PermissionData) {
             this.visible = true;

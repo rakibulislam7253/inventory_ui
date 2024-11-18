@@ -7,7 +7,6 @@ import UserService from '../src/service/user.service';
 import GlobalConstants from '../src/common/GlobalConstant';
 import GlobalFunction from '../src/common/GlobalFunction';
 import LogoutFunction from '../src/common/logout';
-
 import PrimeVue from 'primevue/config';
 import AutoComplete from 'primevue/autocomplete';
 import Accordion from 'primevue/accordion';
@@ -229,8 +228,30 @@ app.component('VirtualScroller', VirtualScroller);
 
 app.mount('#app');
 axios.defaults.showLoader = true;
-// var jwtToken;
-//const CONSTROL_CENTER_URL = import.meta.env.VITE_APP_CONTROL_CENTER_APP;
+var jwtToken;
+var accessToken;
+const CONTROL_CENTER_URL = import.meta.env.VITE_APP_CONTROL_CENTER_URL;
+console.log('Application is loading from URL:', window.location.href);
+// only JWT token
+// function getCookie(name) {
+//     const cookies = document.cookie.split('; ');
+//     const cookie = cookies.find((c) => c.startsWith(name + '='));
+//     return cookie ? cookie.split('=')[1] : null;
+// }
+
+// user Info
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+        return parts.pop().split(';').shift();
+    }
+    return null;
+}
+// get coockies
+const token = getCookie('token');
+console.log('Token from Cookie:', token);
+localStorage.setItem('user', token);
 computed({
     menuList() {
         console.log('object');
@@ -238,28 +259,42 @@ computed({
         return this.$store.state.auth.clickMenu;
     }
 });
-//router.push('/login');
+// router.push('/login');
+
+// const cookies = document.cookie.split('; ');
+// const cookie = cookies.find((c) => c.startsWith(token + '='));
+
+// console.log(cookie);
+// const token = getCookie('token');
+// if (token) {
+//     alert(`Token retrieved: ${token}`);
+// } else {
+//     alert('No token found in cookie!');
+// }
 async function getUserToken() {
-    // jwtToken = await UserService.userToken().then((responce) => responce.data.result_id);
-    // if (jwtToken) {
-    //     localStorage.setItem('jwtToken', jwtToken);
-    //     const userinfo = app.config.globalProperties.$GlobalFunctions.parseJwt(accessToken);
-    //     console.log(userinfo);
-    // } else {
-    //     LogoutFunction.LogoutStoreClear();
-    //     router.push('/login');
-    // }
+    jwtToken = getCookie('token');
+    console.log('log out test-1');
+    console.log(jwtToken);
+    if (jwtToken) {
+        const profileData = JSON.parse(localStorage.getItem('user'));
+        accessToken = profileData.jwt;
+        console.log(profileData);
+    } else {
+        console.log('log out test-2');
+        LogoutFunction.LogoutStoreClear();
+        store.dispatch('auth/logout');
+        window.location.href = 'http://czbapps.citizensbankbd.com/login';
+    }
 }
 getUserToken();
 
-console.log(localStorage.getItem('jwtToken'));
-const accessToken = localStorage.getItem('jwtToken');
-
 axios.interceptors.request.use(
     function (config) {
+        console.log('Request URL:', config.url);
         if (accessToken) {
+            console.log(accessToken);
             config.headers.Authorization = 'Bearer ' + accessToken;
-            axios.defaults.headers.common['module_id'] = localStorage.getItem('module_id');
+            axios.defaults.headers.common['module_id'] = localStorage.getItem('inventory_module_id');
             axios.defaults.headers.common['menu_id'] = localStorage.getItem('menuId');
             axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
             axios.defaults.headers.common['Access-Control-Allow-Methods'] = 'OPTIONS,GET,PUT,POST,DELETE';
@@ -279,24 +314,28 @@ axios.interceptors.request.use(
         return Promise.reject();
     }
 );
+
 //Global Error Handles here
 axios.interceptors.response.use(
     function (response) {
+        // console.log(response);
         return response;
     },
     function (error) {
+        console.log(error);
         if (error.message === 'Network Error') {
             alert('Network Error!');
         }
         return null;
     }
 );
-const RefreshTokenInterval = import.meta.env.VITE_APP_RefreshTokenIntervalInMinutes * 60 * 1000;
+const RefreshTokenInterval = import.meta.env.VITE_APP_RefreshTokenIntervalInMinutes * 60 * 1000000;
 console.log(RefreshTokenInterval);
 function refreshToken() {
     if (accessToken) {
         UserService.refreshAdminUserAccessToken().then(
             (response) => {
+                console.log(response.data.jwt);
                 if (response != null && response.data.jwt != null) {
                     store.dispatch('auth/refreshAccessToken', response.data.jwt);
                 } else {
@@ -319,11 +358,11 @@ setInterval(() => {
 }, RefreshTokenInterval);
 
 function Error401() {
-    if (router.currentRoute.fullPath !== '/login') {
+    if (router.currentRoute.fullPath !== CONTROL_CENTER_URL + 'Login') {
         var message = 'Either session is expired or you are not authorized for the action. Please try login again.';
         store.dispatch('auth/logout');
         LogoutFunction.LogoutStoreClear();
-        router.push('/login');
+        router.push('login');
         alert(message);
     }
 }

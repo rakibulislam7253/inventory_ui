@@ -9,14 +9,10 @@
             :rows="10"
             dataKey="id"
             filterDisplay="menu"
-            :globalFilterFields="['name', 'country.name', 'representative.name', 'balance', 'status']"
+            :globalFilterFields="['suppliers_name', 'address', 'phone_number', 'product_price', 'email']"
         >
             <template #header>
-                <!-- <div style="text-align: left">
-                    <Button icon="pi pi-external-link" label="Export" @click="exportCSV($event)" />
-                </div> -->
                 <div class="flex justify-content-between">
-                    <!-- <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined @click="clearFilter()" /> -->
                     <IconField iconPosition="left">
                         <InputIcon>
                             <i class="pi pi-search" />
@@ -29,45 +25,33 @@
             </template>
             <template #empty> No customers found. </template>
             <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
-            <Column field="name" header="Name" sortable style="min-width: 14rem">
+            <Column field="suppliers_name" header="Name" sortable sortField="suppliers_name" filterField="suppliers_name" style="min-width: 14rem">
                 <template #body="{ data }">
-                    {{ data.name }}
-                </template>
-                <template #filter="{ filterModel }">
-                    <InputText v-model="filterModel.value" type="text" class="p-column-filter" placeholder="Search by name" />
+                    {{ data.suppliers_name }}
                 </template>
             </Column>
-            <Column header="Address" sortable sortField="representative.name" filterField="representative" :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
+            <Column field="address" header="Address" sortable sortField="address" filterField="address" :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
                 <template #body="{ data }">
                     <div class="flex align-items-center gap-2">
-                        <img :alt="data.representative.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${data.representative.image}`" style="width: 32px" />
-                        <span>{{ data.representative.name }}</span>
+                        <span>{{ data.address }}</span>
                     </div>
                 </template>
-                <template #filter="{ filterModel }">
-                    <MultiSelect v-model="filterModel.value" :options="representatives" optionLabel="name" placeholder="Any" class="p-column-filter">
-                        <template #option="slotProps">
-                            <div class="flex align-items-center gap-2">
-                                <img :alt="slotProps.option.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${slotProps.option.image}`" style="width: 32px" />
-                                <span>{{ slotProps.option.name }}</span>
-                            </div>
-                        </template>
-                    </MultiSelect>
+            </Column>
+            <Column field="phone_number" header="Contact" sortable sortField="phone_number" filterField="phone_number" style="min-width: 10rem">
+                <template #body="{ data }">
+                    <span>{{ data.phone_number }}</span>
                 </template>
             </Column>
-            <Column field="date" header="Contact" sortable filterField="date" dataType="date" style="min-width: 10rem">
+            <Column field="email" header="Email" sortable sortField="email" filterField="email" style="min-width: 10rem">
                 <template #body="{ data }">
-                    {{ formatDate(data.date) }}
-                </template>
-                <template #filter="{ filterModel }">
-                    <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />
+                    <span>{{ data.email }}</span>
                 </template>
             </Column>
 
-            <Column field="activity" header="Activity" style="min-width: 5rem">
+            <Column header="Activity" style="min-width: 5rem">
                 <template #body="{ data }">
-                    <Button type="button" icon="pi pi-pencil" rounded square @click="editUnit(data)" />
-                    <Button type="button" icon="pi pi-trash" class="ml-2" rounded square @click="editUnit(data)" />
+                    <Button type="button" style="width: 30px; height: 30px" icon="pi pi-pencil" rounded @click="editUnit(data)" />
+                    <Button type="button" style="width: 30px; height: 30px" icon="pi pi-trash" severity="danger" class="ml-2" rounded @click="editUnit(data)" />
                 </template>
             </Column>
         </DataTable>
@@ -75,12 +59,12 @@
         <!-- <Button label="Show" @click="visible = true" /> -->
     </div>
     <!----------------------------- dialog ---------------------------------------------------->
-    <SupplierAdd ref="PermissionData" @reload="getReload" />
+    <SupplierAdd style="border: none; background-color: #f5f9ff" ref="PermissionData" @whisperedSecret="hearSecret" />
 </template>
 
 <script>
 import { FilterMatchMode } from 'primevue/api';
-import { CustomerService } from '../../service/servicesData';
+import supplier from '../../service/supplier';
 import SupplierAdd from '../../components/Suppliers_Information/SupplierAdd.vue';
 import { ref } from 'vue';
 const PermissionData = ref(0);
@@ -98,25 +82,14 @@ export default {
                 status: { value: null, matchMode: FilterMatchMode.EQUALS },
                 verified: { value: null, matchMode: FilterMatchMode.EQUALS }
             },
-            representatives: [
-                { name: 'Amy Elsner', image: 'amyelsner.png' },
-                { name: 'Anna Fali', image: 'annafali.png' },
-                { name: 'Asiya Javayant', image: 'asiyajavayant.png' },
-                { name: 'Bernardo Dominic', image: 'bernardodominic.png' },
-                { name: 'Elwin Sharvill', image: 'elwinsharvill.png' },
-                { name: 'Ioni Bowcher', image: 'ionibowcher.png' },
-                { name: 'Ivan Magalhaes', image: 'ivanmagalhaes.png' },
-                { name: 'Onyama Limba', image: 'onyamalimba.png' },
-                { name: 'Stephen Shaw', image: 'stephenshaw.png' },
-                { name: 'XuXue Feng', image: 'xuxuefeng.png' }
-            ],
             statuses: ['unqualified', 'qualified', 'new', 'negotiation', 'renewal', 'proposal'],
             loading: true
         };
     },
     mounted() {
-        CustomerService.getCustomersMedium().then((data) => {
-            this.customers = this.getCustomers(data);
+        supplier.get_all_suppliers_info().then((data) => {
+            this.customers = this.getCustomers(data.data);
+            console.log(this.customers);
             this.loading = false;
         });
     },
@@ -124,8 +97,12 @@ export default {
         exportCSV() {
             this.$refs.dt.exportCSV();
         },
-        getReload(PermissionData) {
-            console.log('come from child to parent data ', PermissionData.mydata);
+        hearSecret() {
+            supplier.get_all_suppliers_info().then((data) => {
+                this.customers = this.getCustomers(data.data);
+                console.log(this.customers);
+                this.loading = false;
+            });
         },
         editUnit(PermissionData) {
             this.visible = true;

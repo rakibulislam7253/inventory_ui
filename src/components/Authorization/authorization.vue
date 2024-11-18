@@ -1,5 +1,11 @@
 <template>
-    <h2>Incomplete</h2>
+    <div class="headerSection1">
+        <h4>Authorization</h4>
+    </div>
+    <div class="flex align-items-center gap-3 mb-1 ml-3">
+        <label class="font-semibold w-3rem">Manu:</label>
+        <Dropdown placeholder="Select Menu" v-model="authMenuList.column_name" :options="authMenuListt" @change="ddown" optionLabel="value" class="w-full md:w-40rem" />
+    </div>
     <div class="card">
         <DataTable
             v-model:filters="filters"
@@ -12,94 +18,43 @@
             filterDisplay="menu"
             :globalFilterFields="['name', 'country.name', 'representative.name', 'balance', 'status']"
         >
-            <template #header>
-                <div class="flex justify-content-between">
-                    <!-- <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined @click="clearFilter()" /> -->
-                    <IconField iconPosition="left">
-                        <InputIcon>
-                            <i class="pi pi-search" />
-                        </InputIcon>
-                        <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
-                        <!-- <Button icon="pi pi-external-link" class="ml-5" label="Export" @click="exportCSV($event)" /> -->
-                    </IconField>
-                    <!-- <Button type="button" icon="pi pi-plus" @click="addUnit()" /> -->
-                </div>
-            </template>
             <template #empty> No customers found. </template>
-            <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
-            <Column field="category" header="Requisition No" sortable style="min-width: 14rem">
+            <Column field="Remarks" header="Remarks" sortable style="min-width: 14rem">
                 <template #body="{ data }">
-                    {{ data.name }}
-                </template>
-                <template #filter="{ filterModel }">
-                    <InputText v-model="filterModel.value" type="text" class="p-column-filter" placeholder="Search by name" />
+                    {{ data.remarks }}
                 </template>
             </Column>
-            <Column field="category" header="Branch / Division" sortable style="min-width: 14rem">
+            <Column field="Make By" header="Make By" sortable style="min-width: 14rem">
                 <template #body="{ data }">
-                    {{ data.name }}
-                </template>
-                <template #filter="{ filterModel }">
-                    <InputText v-model="filterModel.value" type="text" class="p-column-filter" placeholder="Search by name" />
+                    {{ data.make_by }}
                 </template>
             </Column>
-            <Column field="category" header="Category" sortable style="min-width: 14rem">
+            <Column field="Make Date" header="Make Date" sortable style="min-width: 14rem">
                 <template #body="{ data }">
-                    {{ data.name }}
-                </template>
-                <template #filter="{ filterModel }">
-                    <InputText v-model="filterModel.value" type="text" class="p-column-filter" placeholder="Search by name" />
-                </template>
-            </Column>
-            <Column header="Item Name" sortable sortField="representative.name" filterField="representative" :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
-                <template #body="{ data }">
-                    <div class="flex align-items-center gap-2">
-                        <img :alt="data.representative.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${data.representative.image}`" style="width: 32px" />
-                        <span>{{ data.representative.name }}</span>
-                    </div>
-                </template>
-                <template #filter="{ filterModel }">
-                    <MultiSelect v-model="filterModel.value" :options="representatives" optionLabel="name" placeholder="Any" class="p-column-filter">
-                        <template #option="slotProps">
-                            <div class="flex align-items-center gap-2">
-                                <img :alt="slotProps.option.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${slotProps.option.image}`" style="width: 32px" />
-                                <span>{{ slotProps.option.name }}</span>
-                            </div>
-                        </template>
-                    </MultiSelect>
+                    {{ data.make_dt }}
                 </template>
             </Column>
 
-            <Column field="date" header="Quantity" sortable filterField="date" dataType="date" style="min-width: 10rem">
+            <Column field="action_status" header="Action Status" sortable filterField="date" dataType="date" style="min-width: 10rem">
                 <template #body="{ data }">
-                    {{ formatDate(data.date) }}
-                </template>
-                <template #filter="{ filterModel }">
-                    <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />
+                    {{ data.action_status }}
                 </template>
             </Column>
-            <Column field="date" header="Details" style="min-width: auto">
+            <Column header="Details" style="min-width: auto">
                 <template #body="{ data }">
                     <!-- {{ data.name }} -->
                     <Button label="Details" outlined class="mb-2 mr-2" @click="details(data)" />
                 </template>
             </Column>
-
-            <Column field="activity" header="Activity" style="min-width: 20rem; text-align: center">
-                <template #body="">
-                    <Button type="button" label="Authorized" />
-                    <Button type="button" label="Decline" class="ml-2" />
-                </template>
-            </Column>
         </DataTable>
     </div>
     <!----------------------------- dialog ---------------------------------------------------->
-    <authorizationView ref="PermissionData" @reload="getReload" />
+    <authorizationView style="border: none; background-color: #f5f9ff" ref="PermissionData" @reload="getReload" />
 </template>
 
 <script>
-import { FilterMatchMode } from 'primevue/api';
-import { CustomerService } from '../../service/servicesData';
+import authMenuList from '../../models/authorizeMenuList';
+import authorization from '../../service/authorizationService';
 import authorizationView from '../../components/Authorization/authorizationView.vue';
 import { ref } from 'vue';
 const PermissionData = ref(0);
@@ -107,42 +62,39 @@ export default {
     components: { authorizationView },
     data() {
         return {
+            authMenuList: new authMenuList(),
             visible: false,
+            authMenuListt: '',
             customers: null,
-            filters: {
-                global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-                name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-                'country.name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-                representative: { value: null, matchMode: FilterMatchMode.IN },
-                status: { value: null, matchMode: FilterMatchMode.EQUALS },
-                verified: { value: null, matchMode: FilterMatchMode.EQUALS }
-            },
-            representatives: [
-                { name: 'Amy Elsner', image: 'amyelsner.png' },
-                { name: 'Anna Fali', image: 'annafali.png' },
-                { name: 'Asiya Javayant', image: 'asiyajavayant.png' },
-                { name: 'Bernardo Dominic', image: 'bernardodominic.png' },
-                { name: 'Elwin Sharvill', image: 'elwinsharvill.png' },
-                { name: 'Ioni Bowcher', image: 'ionibowcher.png' },
-                { name: 'Ivan Magalhaes', image: 'ivanmagalhaes.png' },
-                { name: 'Onyama Limba', image: 'onyamalimba.png' },
-                { name: 'Stephen Shaw', image: 'stephenshaw.png' },
-                { name: 'XuXue Feng', image: 'xuxuefeng.png' }
-            ],
+            profileData: '',
             statuses: ['unqualified', 'qualified', 'new', 'negotiation', 'renewal', 'proposal'],
             loading: true
         };
     },
     mounted() {
-        CustomerService.getCustomersMedium().then((data) => {
-            this.customers = this.getCustomers(data);
-            this.loading = false;
+        this.profileData = JSON.parse(localStorage.getItem('userInfo'));
+        // console.log(this.profileData.userId);
+
+        const moduleId = import.meta.env.VITE_APP_MODULE_ID;
+        authorization.get_unauthorized_menu_list(moduleId, this.profileData.userId).then((data) => {
+            this.authMenuListt = data.data;
         });
     },
     methods: {
+        ddown() {
+            const moduleId = import.meta.env.VITE_APP_MODULE_ID;
+            const menuId = this.authMenuList.column_name.column_name;
+            authorization.get_unauthorized_data_list(moduleId, menuId).then((data) => {
+                const dataList = data.data;
+                this.customers = this.getCustomers(data.data);
+
+                for (let i = 0; i < dataList.length; i++) {
+                    console.log(dataList[i].queue_id);
+                }
+            });
+        },
         ordered() {
             console.log('ordered file');
-            console.log(this.customers);
         },
         exportCSV() {
             this.$refs.dt.exportCSV();
@@ -152,11 +104,10 @@ export default {
         },
         details(PermissionData) {
             this.visible = true;
-            console.log('selection data: ', PermissionData);
+
             this.$refs.PermissionData.updatePermission(PermissionData);
         },
         addUnit() {
-            // this.visible = true;
             console.log('Add data');
             this.$refs.PermissionData.updatePermission(PermissionData);
         },
@@ -176,25 +127,16 @@ export default {
         },
         formatCurrency(value) {
             return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-        },
-        getSeverity(status) {
-            switch (status) {
-                case 'unqualified':
-                    return 'danger';
-
-                case 'qualified':
-                    return 'success';
-
-                case 'new':
-                    return 'info';
-
-                case 'negotiation':
-                    return 'warning';
-
-                case 'renewal':
-                    return null;
-            }
         }
     }
 };
 </script>
+<style scoped>
+.headerSection1 {
+    background-color: #ffffff;
+    padding: 8px;
+    height: 40px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+</style>
