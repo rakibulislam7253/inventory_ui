@@ -4,27 +4,17 @@
             <img :src="czb_logo" alt="logo" />
             <!-- <span>Citizens Banl PLC</span> -->
         </router-link>
-
-        <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
-            <i class="pi pi-bars"></i>
-        </button>
-        <!-- <p>{{ localStorage.getItem('item-name') }}</p> -->
         <button class="p-link layout-topbar-menu-button layout-topbar-button" @click="onTopBarMenuButton()">
             <i class="pi pi-ellipsis-v"></i>
         </button>
-
         <div class="layout-topbar-menu" :class="topbarMenuClasses">
-            <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
-                <i class="pi pi-calendar"></i>
-                <span>Calendar</span>
-            </button>
             <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
                 <div class="dropdown" ref="displaydata">
                     <button class="dropbtn"><i class="pi pi-user"></i></button>
                     <div class="dropdown-content">
-                        <div>
+                        <!-- <div>
                             <p @click="profileButton()" class="profile"><i class="pi pi-fw pi-user profile1" style="margin-right: 5px"></i>Profile</p>
-                        </div>
+                        </div> -->
                         <div>
                             <p @click="logOutButton()" class="profile"><i class="pi pi-sign-out" style="margin-right: 5px"></i>Log Out</p>
                         </div>
@@ -39,13 +29,9 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
-import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
 import czb_logo from '../assets/czb-logo.png';
-const { onMenuToggle } = useLayout();
-
 const displaydata = ref(false);
-
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
 const router = useRouter();
@@ -57,12 +43,20 @@ onMounted(() => {
 onBeforeUnmount(() => {
     unbindOutsideClickListener();
 });
-
-const profileButton = () => {
-    router.push('/UnitOfMeasurement/unit');
-};
+function deleteAllCookies() {
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+        const cookieName = cookie.split('=')[0].trim();
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    }
+}
+// const profileButton = () => {
+//     router.push('/UnitOfMeasurement/unit');
+// };
 const logOutButton = () => {
-    router.push('/');
+    deleteAllCookies();
+    localStorage.clear();
+    router.push('/login');
 };
 const onTopBarMenuButton = () => {
     topbarMenuActive.value = !topbarMenuActive.value;

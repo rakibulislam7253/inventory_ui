@@ -94,12 +94,7 @@ export default {
             this.loading = false;
         });
     },
-    // mounted() {
-    //     CustomerService.getCustomersMedium().then((data) => {
-    //         this.customers = this.getCustomers(data);
-    //         this.loading = false;
-    //     });
-    // },
+
     methods: {
         exportCSV() {
             this.$refs.dt.exportCSV();

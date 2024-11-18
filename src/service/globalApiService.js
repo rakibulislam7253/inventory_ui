@@ -1,7 +1,7 @@
 // get_product_details_by_id
 export async function fetchData(param1) {
     try {
-        const response = await fetch(`http://10.140.6.22/inventory_api/api/Product/get_product_details_by_id?product_id=${param1}`);
+        const response = await fetch(`http://cbptest.citizensbankbd.com/inventory_service/api/Product/get_product_details_by_id?product_id=${param1}`);
         const data = response.json();
         // console.log(data);
         return data;
@@ -14,7 +14,7 @@ export async function fetchData(param1) {
 // http://10.140.6.22/inventory_api/api/Product/get_product_details_by_name?product_name=Computer
 export async function product_name(param1) {
     try {
-        const response = await fetch(`http://10.140.6.22/inventory_api/api/Product/get_product_details_by_name?product_name=${param1}`);
+        const response = await fetch(`http://cbptest.citizensbankbd.com/inventory_service/api/Product/get_product_details_by_name?product_name=${param1}`);
         const data = response.json();
         // console.log(data);
         return data;
@@ -27,7 +27,7 @@ export async function product_name(param1) {
 // http://10.140.6.22/inventory_api/api/ProductCategory/get_product_category_by_id?category_id=w
 export async function category_name(param1) {
     try {
-        const response = await fetch(`http://10.140.6.22/inventory_api/api/ProductCategory/get_product_category_by_id?category_id=${param1}`);
+        const response = await fetch(`http://cbptest.citizensbankbd.com/inventory_service/api/ProductCategory/get_product_category_by_id?category_id=${param1}`);
         const data = response.json();
         // console.log(data);
         return data;
@@ -40,7 +40,7 @@ export async function category_name(param1) {
 // http://10.140.6.22/inventory_api/api/ProductCategory/get_product_category_by_name?category_name=category_namedToId
 export async function category_namedToId(param1) {
     try {
-        const response = await fetch(`http://10.140.6.22/inventory_api/api/ProductCategory/get_product_category_by_name?category_name=${param1}`);
+        const response = await fetch(`http://cbptest.citizensbankbd.com/inventory_service/api/ProductCategory/get_product_category_by_name?category_name=${param1}`);
         const data = response.json();
         // console.log(data);
         return data;
@@ -52,7 +52,7 @@ export async function category_namedToId(param1) {
 // Suppliers
 export async function supplierData(param1) {
     try {
-        const response = await fetch(`http://10.140.6.22/inventory_api/api/Suppliers/get_suppliers_info_by_id?suppliers_id=${param1}`);
+        const response = await fetch(`http://cbptest.citizensbankbd.com/inventory_service/api/Suppliers/get_suppliers_info_by_id?suppliers_id=${param1}`);
         const data = response.json();
         // console.log(data);
         return data;

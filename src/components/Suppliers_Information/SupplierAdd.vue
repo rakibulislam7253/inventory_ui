@@ -59,10 +59,10 @@ export default {
             supplierService.create_update_suppliers_info(this.supplierData).then((res) => {
                 if (this.supplierData.suppliers_name) {
                     if (res.data.status_code) {
-                        this.visible = false;
                         this.$emit('whisperedSecret');
                         this.supplierData.loadModel('');
                         toast.confirmation_box(res);
+                        this.visible = false;
                     } else {
                         this.visible = false;
                         this.$toast.add({ severity: 'error', summary: 'Error Message', detail: 'Response not found!', life: 3000 });
@@ -98,6 +98,7 @@ export default {
                     } else {
                         toast.confirmation_box(res);
                         this.supplierData.loadModel('');
+                        this.visible = false;
                     }
                 }
                 this.loading = false;

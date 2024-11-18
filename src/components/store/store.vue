@@ -1,6 +1,16 @@
 <template>
     <div class="card">
-        <DataTable v-model:filters="filters" ref="dt" v-model:selection="selectedCustomers" :value="customers" paginator :rows="10" dataKey="id" filterDisplay="menu" :globalFilterFields="['unit_name', 'unit_description']">
+        <DataTable
+            v-model:filters="filters"
+            ref="dt"
+            v-model:selection="selectedCustomers"
+            :value="customers"
+            paginator
+            :rows="10"
+            dataKey="id"
+            filterDisplay="menu"
+            :globalFilterFields="['category_name', 'product_name', 'current_stock', 'product_price']"
+        >
             <template #header>
                 <div class="flex justify-content-between">
                     <IconField iconPosition="left">
@@ -10,48 +20,58 @@
                         <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
                         <Button icon="pi pi-external-link" class="ml-5" style="width: auto" label="Export" @click="exportCSV($event)" />
                     </IconField>
-                    <Button type="button" style="width: 30px; height: 30px" icon="pi pi-plus" @click="addUnit()" />
                 </div>
             </template>
             <template #empty> No customers found. </template>
-            <Column field="unit_name" header="Unit Name" sortable sortField="unit_name" filterField="unit_name" style="min-width: 14rem">
+            <Column field="product_name" header="Product Name" sortable sortField="unit_description" filterField="unit_description" style="min-width: 14rem">
                 <template #body="{ data }">
-                    {{ data.unit_name }}
+                    {{ data.product_name }}
                 </template>
             </Column>
-            <Column field="unit_description" header="Unit Description" sortable sortField="unit_description" filterField="unit_description" style="min-width: 14rem">
+            <Column field="category_name" header="Category Name" sortable sortField="unit_name" filterField="unit_name" style="min-width: 14rem">
                 <template #body="{ data }">
-                    {{ data.unit_description }}
+                    {{ data.category_name }}
                 </template>
             </Column>
 
-            <Column field="activity" header="Activity" style="min-width: 5rem">
+            <Column field="current_stock" header="Current Stock" sortable sortField="unit_description" filterField="unit_description" style="min-width: 2rem">
                 <template #body="{ data }">
-                    <Button type="button" style="width: 30px; height: 30px" icon="pi pi-pencil" rounded @click="editUnit(data)" />
-                    <Button type="button" style="width: 30px; height: 30px" icon="pi pi-trash" severity="danger" class="ml-3" rounded @click="deleteData(data)" />
+                    <p style="text-align: center">{{ data.current_stock }}</p>
+                </template>
+            </Column>
+            <Column field="product_price" header="Product Price" sortable sortField="unit_description" filterField="unit_description" style="min-width: 2rem">
+                <template #body="{ data }">
+                    <p style="text-align: center">{{ data.product_price }}</p>
+                </template>
+            </Column>
+            <Column field="Current_amount" header="Current Amount" sortable sortField="unit_description" filterField="unit_description" style="min-width: 2rem">
+                <template #body="{ data }">
+                    <p style="text-align: center">{{ data.current_stock * data.product_price }}</p>
+                </template>
+            </Column>
+            <Column field="reorder_level" header="Reorder Level" sortable sortField="unit_description" filterField="unit_description" style="min-width: 2rem; height: 30px">
+                <template #body="{ data }">
+                    <p style="text-align: center">{{ data.reorder_level }}</p>
                 </template>
             </Column>
         </DataTable>
     </div>
-    <!----------------------------- dialog ---------------------------------------------------->
-    <addUnit class="addunit" ref="PermissionData" @whisperedSecret="hearSecret" />
 </template>
 
 <script>
 import { FilterMatchMode } from 'primevue/api';
-import unitService from '../../service/unitData';
-import addUnit from '../../components/UnitOfMeasurement/AddUnit.vue';
-import { ref } from 'vue';
-
-// import jwtDecode from 'jwt-decode'
-const PermissionData = ref(0);
+import storeHouse from '../../service/store.service';
+// import jwtDecode from 'jwt-decode';
 export default {
-    components: { addUnit },
     data() {
         return {
             visible: false,
             customers: null,
             date: null,
+            storeData: '',
+            balance: '',
+            detailsData: [],
+            userData: '',
             filters: {
                 global: { value: null, matchMode: FilterMatchMode.CONTAINS },
                 name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
@@ -66,10 +86,14 @@ export default {
         };
     },
     mounted() {
-        unitService.get_all_unit_of_measurements().then((data) => {
-            console.log(data.data);
-            this.customers = this.getCustomers(data.data);
-            // console.log(this.customers);
+        storeHouse.get_store_product_information().then((data) => {
+            this.storeData = data.data;
+
+            for (let i = 0; i < this.storeData.length; i++) {
+                this.detailsData.push(...this.storeData[i].inv_product_details);
+            }
+
+            this.customers = this.getCustomers(this.detailsData);
             this.loading = false;
         });
     },
@@ -79,24 +103,7 @@ export default {
             console.log(event.target.value);
             this.$refs.dt.exportCSV();
         },
-        hearSecret() {
-            unitService.get_all_unit_of_measurements().then((data) => {
-                // console.log(data);
-                this.customers = this.getCustomers(data.data);
-                console.log(this.customers);
-                this.loading = false;
-            });
-        },
-        editUnit(PermissionData) {
-            // this.visible = true;
-            console.log('selection data: ', PermissionData);
-            this.$refs.PermissionData.updatePermission(PermissionData);
-        },
-        addUnit() {
-            // this.visible = true;
-            // console.log('Add data');
-            this.$refs.PermissionData.updatePermission(PermissionData);
-        },
+
         getCustomers(data) {
             return [...(data || [])].map((d) => {
                 d.date = new Date(d.date);

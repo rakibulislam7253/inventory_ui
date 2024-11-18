@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+//http://cbptest.citizensbankbd.com/control_center_service/api/Login/get_user_token
 const BASE_URL = import.meta.env.VITE_APP_CONTROL_CENTER_API;
 const API_URL = BASE_URL + 'api';
 
@@ -29,7 +29,7 @@ class UserService {
     }
     userToken() {
         console.log(API_URL);
-        return axios.get('http://10.140.6.22/cPoint/api/Login/get_user_token');
+        return axios.get(API_URL + '/Login/get_user_token');
     }
     refreshAdminUserAccessToken() {
         return axios.get(API_URL + '/Login/refresh-user-token', {
