@@ -1,6 +1,7 @@
 import axios from 'axios';
-//http://cbptest.citizensbankbd.com/control_center_service/api/Login/get_user_token
+// http://czbapp.citizensbankbd.com/control_center_service/api/Login/get_user_token
 const BASE_URL = import.meta.env.VITE_APP_CONTROL_CENTER_API;
+// VITE_APP_CONTROL_CENTER_API
 const API_URL = BASE_URL + 'api';
 
 class UserService {

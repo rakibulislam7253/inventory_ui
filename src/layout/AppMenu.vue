@@ -1,14 +1,14 @@
 <template>
     <ul class="layout-menu">
-        <!-- <template v-for="(item, i) in this.menuItems" :key="item">
+        <template v-for="(item, i) in this.menuItems" :key="item">
             <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>
             <li v-if="item.separator" class="menu-separator"></li>
-        </template> -->
+        </template>
     </ul>
 </template>
 
 <script setup>
-// import AppMenuItem from './AppMenuItem.vue';
+import AppMenuItem from './AppMenuItem.vue';
 </script>
 
 <script>
@@ -23,12 +23,12 @@ export default {
     },
     mounted() {
         console.log('I am menu');
-        this.profileData = JSON.parse(localStorage.getItem('user'));
-        console.log(this.profileData.userId);
+        this.profileData = JSON.parse(localStorage.getItem('userDetails'));
+        console.log(this.profileData.unique_name);
         console.log(this.profileData);
         const moduleId = import.meta.env.VITE_APP_MODULE_ID;
         console.log(moduleId);
-        menudata.get_user_menu(this.profileData.userId, moduleId).then((data) => {
+        menudata.get_user_menu(this.profileData.unique_name, moduleId).then((data) => {
             console.log(data.data);
             this.menuset = data.data;
             this.menuItems = this.createMenuItems(this.menuset);
