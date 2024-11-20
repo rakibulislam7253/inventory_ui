@@ -1,4 +1,6 @@
 import { computed, createApp } from 'vue';
+import { jwtDecode } from 'jwt-decode';
+
 import App from './App.vue';
 import router from './router';
 import store from './store';
@@ -228,30 +230,22 @@ app.component('VirtualScroller', VirtualScroller);
 
 app.mount('#app');
 axios.defaults.showLoader = true;
-var jwtToken;
 var accessToken;
 const CONTROL_CENTER_URL = import.meta.env.VITE_APP_CONTROL_CENTER_URL;
 console.log('Application is loading from URL:', window.location.href);
 // only JWT token
-// function getCookie(name) {
-//     const cookies = document.cookie.split('; ');
-//     const cookie = cookies.find((c) => c.startsWith(name + '='));
-//     return cookie ? cookie.split('=')[1] : null;
-// }
-
-// user Info
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) {
-        return parts.pop().split(';').shift();
-    }
-    return null;
+function getCookie() {
+    // userToken
+    UserService.userToken().then((response) => {
+        console.log(response.data);
+        var tockenData = response.data.result_id;
+        getUserToken(tockenData);
+        localStorage.setItem('user', tockenData);
+    });
 }
-// get coockies
-const token = getCookie('token');
-console.log('Token from Cookie:', token);
-localStorage.setItem('user', token);
+
+getCookie();
+
 computed({
     menuList() {
         console.log('object');
@@ -260,25 +254,15 @@ computed({
     }
 });
 // router.push('/login');
-
-// const cookies = document.cookie.split('; ');
-// const cookie = cookies.find((c) => c.startsWith(token + '='));
-
-// console.log(cookie);
-// const token = getCookie('token');
-// if (token) {
-//     alert(`Token retrieved: ${token}`);
-// } else {
-//     alert('No token found in cookie!');
-// }
-async function getUserToken() {
-    jwtToken = getCookie('token');
+async function getUserToken(data) {
     console.log('log out test-1');
-    console.log(jwtToken);
+    console.log(data);
+    var jwtToken = data;
     if (jwtToken) {
-        const profileData = JSON.parse(localStorage.getItem('user'));
-        accessToken = profileData.jwt;
-        console.log(profileData);
+        accessToken = jwtToken;
+        //  jwt token to user data details
+        var decoded = jwtDecode(data);
+        localStorage.setItem('userDetails', JSON.stringify(decoded));
     } else {
         console.log('log out test-2');
         LogoutFunction.LogoutStoreClear();
@@ -286,7 +270,7 @@ async function getUserToken() {
         window.location.href = 'http://czbapps.citizensbankbd.com/login';
     }
 }
-getUserToken();
+
 
 axios.interceptors.request.use(
     function (config) {
@@ -318,7 +302,7 @@ axios.interceptors.request.use(
 //Global Error Handles here
 axios.interceptors.response.use(
     function (response) {
-        // console.log(response);
+        console.log(response);
         return response;
     },
     function (error) {
