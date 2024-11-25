@@ -30,22 +30,22 @@ const router = createRouter({
                     component: () => import('../components/Warehouse_Information/warehouse.vue')
                 },
                 {
-                    path: 'product/category',
+                    path: 'category',
                     name: 'category',
                     component: () => import('../components/Product_category/Category.vue')
                 },
                 {
-                    path: 'product/itemInfo',
+                    path: 'itemInfo',
                     name: 'itemInfo',
                     component: () => import('../components/Product_category/item.vue')
                 },
                 {
-                    path: 'supplierInformation/suppliers',
+                    path: 'suppliers',
                     name: 'item',
                     component: () => import('../components/suppliers_information/Supplier.vue')
                 },
                 {
-                    path: 'purchase_Order/purchase',
+                    path: 'purchase_Order',
                     name: 'purchase',
                     component: () => import('../components/Purchase Order/purchaseOrder.vue')
                 },
@@ -55,12 +55,12 @@ const router = createRouter({
                     component: () => import('../components/OrderReceived/orderReceived.vue')
                 },
                 {
-                    path: 'product_requisition/requisition',
+                    path: 'product_requisition',
                     name: 'requisition',
                     component: () => import('../components/Product Requisition/Requition.vue')
                 },
                 {
-                    path: 'product_requisition/purchaseIssue',
+                    path: 'purchaseIssue',
                     name: 'purchaseIssue',
                     component: () => import('../components/Product Requisition/purchaseIssue.vue')
                 },
@@ -83,8 +83,8 @@ const router = createRouter({
         },
 
         {
-            path: '/inventory_ui/login',
-            name: '/login',
+            path: '/login',
+            name: 'login',
             beforeEnter: () => {
                 window.location.href = BASE_URL + 'login';
             }

@@ -1,8 +1,8 @@
 <template>
     <ul class="layout-menu">
-        <template v-for="(item, i) in this.menuItems" :key="item">
+        <template v-for="(item,i) in menuItems" :key="item">
             <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>
-            <li v-if="item.separator" class="menu-separator"></li>
+            <li v-if="item.separator" class="menu-separator">{{ menuItems.label }}</li>
         </template>
     </ul>
 </template>
@@ -18,20 +18,20 @@ export default {
         return {
             profileData: '',
             menuset: '',
-            menuItems: []
+            menuItems: [],
+            count:0
         };
     },
     mounted() {
         console.log('I am menu');
         this.profileData = JSON.parse(localStorage.getItem('userDetails'));
-        console.log(this.profileData.unique_name);
-        console.log(this.profileData);
         const moduleId = import.meta.env.VITE_APP_MODULE_ID;
-        console.log(moduleId);
         menudata.get_user_menu(this.profileData.unique_name, moduleId).then((data) => {
-            console.log(data.data);
             this.menuset = data.data;
+            this.count = this.count + 1;
+
             this.menuItems = this.createMenuItems(this.menuset);
+            console.log(this.count);
         });
     },
     methods: {
