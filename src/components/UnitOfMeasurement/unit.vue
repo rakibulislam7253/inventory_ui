@@ -69,7 +69,7 @@ export default {
         unitService.get_all_unit_of_measurements().then((data) => {
             console.log(data.data);
             this.customers = this.getCustomers(data.data);
-            // console.log(this.customers);
+            console.log(this.customers);
             this.loading = false;
         });
     },

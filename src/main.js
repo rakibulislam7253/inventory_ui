@@ -230,7 +230,6 @@ app.component('VirtualScroller', VirtualScroller);
 
 app.mount('#app');
 axios.defaults.showLoader = true;
-var accessToken;
 const CONTROL_CENTER_URL = import.meta.env.VITE_APP_CONTROL_CENTER_URL;
 console.log('Application is loading from URL:', window.location.href);
 // only JWT token
@@ -259,9 +258,9 @@ async function getUserToken(data) {
     console.log(data);
     var jwtToken = data;
     if (jwtToken) {
-        accessToken = jwtToken;
         //  jwt token to user data details
         var decoded = jwtDecode(data);
+
         localStorage.setItem('userDetails', JSON.stringify(decoded));
     } else {
         console.log('log out test-2');
@@ -271,10 +270,10 @@ async function getUserToken(data) {
     }
 }
 
-
 axios.interceptors.request.use(
     function (config) {
         console.log('Request URL:', config.url);
+        const accessToken = localStorage.getItem('user');
         if (accessToken) {
             console.log(accessToken);
             config.headers.Authorization = 'Bearer ' + accessToken;
@@ -316,25 +315,25 @@ axios.interceptors.response.use(
 const RefreshTokenInterval = import.meta.env.VITE_APP_RefreshTokenIntervalInMinutes * 60 * 1000000;
 console.log(RefreshTokenInterval);
 function refreshToken() {
-    if (accessToken) {
-        UserService.refreshAdminUserAccessToken().then(
-            (response) => {
-                console.log(response.data.jwt);
-                if (response != null && response.data.jwt != null) {
-                    store.dispatch('auth/refreshAccessToken', response.data.jwt);
-                } else {
-                    Error401();
-                }
-            },
-            (error) => {
-                console.log(error);
-                store.dispatch('auth/logout');
-                LogoutFunction.LogoutStoreClear();
-                router.push('/login');
-                alert('Session Time Out! Please Log in!');
+    // if (accessToken) {
+    UserService.refreshAdminUserAccessToken().then(
+        (response) => {
+            console.log(response.data.jwt);
+            if (response != null && response.data.jwt != null) {
+                store.dispatch('auth/refreshAccessToken', response.data.jwt);
+            } else {
+                Error401();
             }
-        );
-    }
+        },
+        (error) => {
+            console.log(error);
+            store.dispatch('auth/logout');
+            LogoutFunction.LogoutStoreClear();
+            router.push('/login');
+            alert('Session Time Out! Please Log in!');
+        }
+    );
+    // }
 }
 refreshToken();
 setInterval(() => {

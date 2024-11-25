@@ -68,6 +68,7 @@ watch(
 const itemClick = (event, item) => {
     // this.$emit('whisperedSecret', 'Hey parent, here a secret!');
     console.log(item);
+    localStorage.setItem('menuId', JSON.stringify(item));
     if (item.disabled) {
         event.preventDefault();
         return;
