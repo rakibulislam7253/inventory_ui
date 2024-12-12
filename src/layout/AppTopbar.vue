@@ -30,6 +30,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
+import logout from '../service/user.service';
 import czb_logo from '../assets/czb-logo.png';
 const displaydata = ref(false);
 const outsideClickListener = ref(null);
@@ -43,20 +44,13 @@ onMounted(() => {
 onBeforeUnmount(() => {
     unbindOutsideClickListener();
 });
-function deleteAllCookies() {
-    const cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
-        const cookieName = cookie.split('=')[0].trim();
-        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-    }
-}
-// const profileButton = () => {
-//     router.push('/UnitOfMeasurement/unit');
-// };
+
 const logOutButton = () => {
-    deleteAllCookies();
-    localStorage.clear();
-    router.push('/login');
+    logout.logout().then((response) => {
+        console.log(response);
+        localStorage.clear();
+        router.push('/login');
+    });
 };
 const onTopBarMenuButton = () => {
     topbarMenuActive.value = !topbarMenuActive.value;

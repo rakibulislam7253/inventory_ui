@@ -1,6 +1,6 @@
 <template>
     <ul class="layout-menu">
-        <template v-for="(item,i) in menuItems" :key="item">
+        <template v-for="(item, i) in menuItems" :key="item">
             <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>
             <li v-if="item.separator" class="menu-separator">{{ menuItems.label }}</li>
         </template>
@@ -19,7 +19,7 @@ export default {
             profileData: '',
             menuset: '',
             menuItems: [],
-            count:0
+            count: 0
         };
     },
     mounted() {

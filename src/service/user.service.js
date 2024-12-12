@@ -24,11 +24,14 @@ class UserService {
     updateCurrentUser(userData) {
         return axios.post(API_URL + '/update/current-user', userData);
     }
-
+    logout() {
+        return axios.post(API_URL + '/Login/logout');
+    }
     updateUser(user) {
         return axios.post(API_URL + '/update', user);
     }
     userToken() {
+        console.log('API_URL');
         console.log(API_URL);
         return axios.get(API_URL + '/Login/get_user_token');
     }

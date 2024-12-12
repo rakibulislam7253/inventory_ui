@@ -1,5 +1,4 @@
 import axios from 'axios';
-// http://10.140.6.22/inventory_api/api/Requisition/get_product_requisition?requisition_id=PR2024081900013
 const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 class requisitionDataService {
     create_product_requisition(purchaseData) {
@@ -25,7 +24,6 @@ class requisitionDataService {
     get_requisition_details(purchaseData) {
         console.log(purchaseData);
         return axios.get(BASE_URL + '/api/Requisition/get_requisition_details?requisition_id=' + purchaseData);
-        // return axios.post(BASE_URL + 'get_requisition_details?requisition_id=PR2024081100010', purchaseData);
     }
     get_requisition_issue(purchaseData) {
         console.log(purchaseData);

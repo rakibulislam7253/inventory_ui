@@ -59,7 +59,7 @@
 
 <script>
 import { FilterMatchMode } from 'primevue/api';
-import productCategoryData from '../../service/productCategory';
+import productCategoryService from '../../service/productCategory';
 import CategoryAdd from '../../components/Product_category/CategoryAdd.vue';
 import { ref } from 'vue';
 const PermissionData = ref(0);
@@ -89,7 +89,7 @@ export default {
     //     });
     // },
     mounted() {
-        productCategoryData.get_all_product_category().then((data) => {
+        productCategoryService.get_all_product_category().then((data) => {
             this.customers = this.getCustomers(data.data);
             console.log(this.customers);
             this.loading = false;
@@ -100,7 +100,7 @@ export default {
             this.$refs.dt.exportCSV();
         },
         hearSecret() {
-            productCategoryData.get_all_product_category().then((data) => {
+            productCategoryService.get_all_product_category().then((data) => {
                 this.customers = this.getCustomers(data.data);
                 console.log(this.customers);
                 this.loading = false;

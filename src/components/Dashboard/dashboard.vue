@@ -1,29 +1,41 @@
 <template>
     <div class="headerSection1">
-        <h4>Purchase Order</h4>
+        <h4>Dashboard</h4>
     </div>
     <div class="headerSection">
         <div class="flex flex-wrap gap-1">
-            <div class="flex align-items-center gap-3 mb-1">
-                <label class="font-semibold w-8rem">Purchase Requisition</label>
+            <div class="flex align-items-center gap-2 mb-1">
+                <label class="font-semibold w-15em">Purchase Requisition</label>
                 <InputText id="Address" size="small" class="flex-auto" autocomplete="off" />
             </div>
-            <div class="flex align-items-center gap-3 mb-1" @change="searchOrderId($event)">
+            <div class="flex align-items-center gap-3 mb-1">
                 <label class="font-semibold w-8rem">Order Number</label>
                 <InputText id="Address" size="small" class="flex-auto" autocomplete="off" />
             </div>
             <div class="flex align-items-center gap-3 mb-1">
-                <label class="font-semibold w-5rem">Supplier</label>
-                <Dropdown v-model="purchaseData.supplier_id" :options="supplierData" optionLabel="suppliers_name" placeholder="Select Supplier" class="w-full md:w-20rem" />
+                <label class="font-semibold w-6rem">From Date</label>
+                <InputText id="Address" type="date" v-model="purchaseData.delivery_date" size="small" class="flex-auto w-full md:w-14rem" autocomplete="off" />
             </div>
-            <div class="flex align-items-center gap-3 mb-1">
-                <label class="font-semibold w-8rem">Make By</label>
-                <InputText id="Address" size="small" v-model="purchaseData.make_by" class="flex-auto" autocomplete="off" />
+            <div class="flex align-items-center gap-2 mb-1">
+                <label class="font-semibold w-10rem">Category</label>
+                <Dropdown v-model="productCty" :options="supplierData" optionLabel="suppliers_name" placeholder="Select Category" class="w-full md:w-14rem" />
             </div>
             <div class="flex align-items-center gap-3 mb-1">
                 <label class="font-semibold w-8rem">Delivery Date</label>
-                <InputText id="Address" type="date" v-model="purchaseData.delivery_date" size="small" class="flex-auto" autocomplete="off" />
+                <InputText id="Address" type="date" v-model="purchaseData.delivery_date" size="small" class="flex-auto w-full md:w-14rem" autocomplete="off" />
             </div>
+            <div class="flex align-items-center gap-3 mb-1">
+                <label class="font-semibold w-6rem">To Date</label>
+                <InputText id="Address" type="date" v-model="purchaseData.delivery_date" size="small" class="flex-auto w-full md:w-14rem" autocomplete="off" />
+            </div>
+            <div class="flex align-items-center gap-2 mb-1">
+                <label class="font-semibold w-10rem">Supplier</label>
+                <Dropdown v-model="purchaseData.supplier_id" :options="supplierData" optionLabel="suppliers_name" placeholder="Select Supplier" class="w-full md:w-14rem" />
+            </div>
+        </div>
+        <div style="margin-left: 40%; margin-top: 3%">
+            <Button label="search" severity="search" class="mb-2 mr-5" @click="searchData()" />
+            <Button label="Cancel" severity="danger" class="mb-2 mr-2" />
         </div>
     </div>
     <div>
@@ -40,15 +52,6 @@
                 :rowsPerPageOptions="[5, 10, 25]"
                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
             >
-                <template #header>
-                    <div class="flex flex-wrap gap-2 items-center justify-between">
-                        <Toolbar class="mb-2">
-                            <template #start>
-                                <Button label="New" icon="pi pi-plus" severity="success" class="mr-2" @click="openNew" />
-                            </template>
-                        </Toolbar>
-                    </div>
-                </template>
                 <div v-if="GetsearchOrderId">
                     <Column field="product_category_id" header="Category" sortable style="min-width: 12rem"></Column>
                     <Column field="product_id" header="Item Name" sortable style="min-width: 8rem"></Column>
@@ -78,7 +81,7 @@
                     </Column>
                 </div>
             </DataTable>
-            <p>Total Amount: {{ this.GrandPrice }}</p>
+            <!-- <p>Total Amount: {{ this.GrandPrice }}</p> -->
             <div style="display: flex; justify-content: flex-end">
                 <Button v-if="updateOrder" label="Update Order" @click="updateOrdered()" />
                 <Button v-if="placeOrder" class="ml-3" style="backgroundcolor: " label="Place Order" @click="Ordered()" />
@@ -111,12 +114,6 @@
                     <InputText id="total_amount" type="number" disabled :value="sum" v-model="product.total_amount" class="flex-auto" autocomplete="off" />
                 </div>
             </div>
-
-            <template #footer>
-                <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
-                <Button v-if="submitionButton" label="Save" icon="pi pi-check" @click="saveProduct()" />
-                <Button v-if="updateButton" label="update" icon="pi pi-check" @click="updateProduct()" />
-            </template>
         </Dialog>
     </div>
 </template>
@@ -131,7 +128,6 @@ import purchaseDetailsData from '../../models/purchaseDetails';
 import productCategoryService from '../../service/productCategory';
 import purchaseOrderData from '../../service/purchaseOrder';
 import itemService from '../../service/item';
-import { category_name, fetchData, category_namedToId, product_name } from '../../service/globalApiService';
 export default {
     data() {
         return {
@@ -160,8 +156,7 @@ export default {
             deleteProductDialog: false,
             deleteProductsDialog: false,
             updateButton: false,
-            submitionButton: false,
-            queueId: '',
+
             product: {},
             filters: {},
             count: 0,
@@ -188,7 +183,9 @@ export default {
             this.loading = false;
         });
         productCategoryService.get_all_product_category().then((res) => {
+            // console.log(res.data);
             this.productCty = res.data;
+            // console.log('this.productCty');
             // console.log(this.productCty);
         });
         itemService.get_all_product_details().then((data) => {
@@ -197,54 +194,12 @@ export default {
         });
     },
     methods: {
+        searchData() {
+            console.log('search data');
+        },
         searchOrderId(event) {
             this.GetsearchOrderId = true;
             console.log(event.target.value);
-            purchaseOrderData.get_purchase_orders(event.target.value).then(async (res) => {
-                console.log(res.data);
-                this.purchaseData.loadModel(res.data[0]);
-                this.purchaseData.auth_status_id = 'U';
-                this.purchaseData.last_action = '2';
-                this.purchaseData.auth_1st_by = '';
-                this.purchaseData.auth_1st_dt = '';
-                this.purchaseData.auth_2nd_by = '';
-                this.purchaseData.auth_2nd_dt = '';
-                this.purchaseData.delivery_date = '';
-                this.purchaseData.receive_date = '';
-                this.purchaseData.remarks = '';
-                this.purchaseData.requisition_id = '';
-                this.purchaseData.status_id = '';
-
-                console.log(this.purchaseData);
-            }),
-                purchaseOrderData.get_purchase_orders_details(event.target.value).then(async (res) => {
-                    console.log(res.data);
-                    this.product = res.data;
-                    if (this.product != '') {
-                        this.updateOrder = true;
-                        this.placeOrder = false;
-
-                        for (let i = 0; i < this.product.length; i++) {
-                            console.log(this.product[i].product_category_id);
-                            this.products.push(this.product[i]);
-
-                            // product Id to product name
-                            this.result = await fetchData(this.product[i].product_id);
-                            this.products[i].product_id = this.result[0].product_name;
-
-                            // category Id to category name
-                            this.result = await category_name(this.product[i].product_category_id);
-                            this.products[i].product_category_id = this.result[0].category_name;
-                        }
-                        let sum = 0;
-                        for (let i = 0; i < this.products.length; i++) {
-                            sum = sum + this.products[i].total_amount;
-                            this.GrandPrice = sum;
-                        }
-                    } else {
-                        this.$toast.add({ severity: 'error', summary: 'Order Creation Id', detail: 'Purchase Order Unauthorization!', life: 3000 });
-                    }
-                });
         },
         saveProduct() {
             this.submitted = true;
@@ -335,54 +290,7 @@ export default {
                 this.$toast.add({ severity: 'error', summary: 'Order Creation Id', detail: 'Create Order ID!', life: 3000 });
             }
         },
-        async updateOrdered() {
-            console.log(this.products);
-            this.purchaseData.auth_status_id = 'U';
-            this.purchaseData.last_action = '2';
-            for (let i = 0; i < this.products.length; i++) {
-                this.count = this.count + this.products[i].total_amount;
-            }
-            this.purchaseData.total_amount = this.count;
-            console.log(this.purchaseData);
-            purchaseOrderData.create_purchase_order(this.purchaseData).then(async (res) => {
-                console.log(res.data);
 
-                for (let i = 0; i < this.products.length; i++) {
-                    this.productDetailsModule.queue_id = res.data.result_guid;
-                    console.log(this.productDetailsModule.queue_id);
-                    console.log(this.productDetailsModule);
-                    this.productDetailsModule.order_id = this.products[i].order_id;
-                    this.productDetailsModule.product_category_id = this.products[i].product_category_id;
-                    //category_namedToId
-                    this.result = await category_namedToId(this.productDetailsModule.product_category_id);
-                    this.productDetailsModule.product_category_id = this.result[0].category_id;
-                    //product_namedToId
-                    this.productDetailsModule.product_id = this.products[i].product_id;
-                    this.result = await product_name(this.productDetailsModule.product_id);
-                    this.productDetailsModule.product_id = this.result[0].product_id;
-                    this.productDetailsModule.order_quantity = this.products[i].order_quantity;
-                    this.productDetailsModule.requisition_quantity = this.products[i].requisition_quantity;
-                    this.productDetailsModule.unit_price = this.products[i].unit_price;
-                    this.productDetailsModule.total_amount = this.products[i].total_amount;
-                    this.productDetailsModule.last_action = '2';
-                    this.productDetailsModule.auth_status_id = 'U';
-                    this.detailspush.push({ ...this.productDetailsModule }); //array of object creation
-                }
-                console.log(this.detailspush);
-                purchaseOrderData.create_purchase_order_details(this.detailspush).then((res) => {
-                    console.log(res.data);
-                    if (res.data.result_id) {
-                        this.$toast.add({ severity: 'success', summary: 'Update Order', detail: 'Update Successful', life: 3000 });
-                        this.productDetailsModule.loadModel('');
-                        this.purchaseData.loadModel('');
-                        this.products = [];
-                        // location.reload();
-                    } else {
-                        this.$toast.add({ severity: 'error', summary: 'Order Details', detail: 'Same Cetagory or Item  ID!', life: 3000 });
-                    }
-                });
-            });
-        },
         formatCurrency(value) {
             if (value) return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
             return;
@@ -390,10 +298,7 @@ export default {
         openNew() {
             console.log(this.product);
             this.product = {};
-            // this.product.loadModel("");
-            // this.placeOrder=true
             this.updateButton = false;
-            this.submitionButton = true;
             this.submitted = false;
             this.productDialog = true;
         },
@@ -405,7 +310,6 @@ export default {
             console.log(product);
             this.product = { ...product };
             this.updateButton = true;
-            this.submitionButton = false;
             this.productDialog = true;
         },
         confirmDeleteProduct(product) {
@@ -420,7 +324,6 @@ export default {
         },
         findIndexById(id) {
             let index = -1;
-            // console.log(id.product_category_id.category_id);
             for (let i = 0; i < this.products.length; i++) {
                 console.log(this.products[i].product_id);
                 if (this.products[i].product_id) {
@@ -445,32 +348,13 @@ export default {
         confirmDeleteSelected() {
             this.deleteProductsDialog = true;
         },
-        // deleteSelectedProducts() {
-        //     this.products = this.products.filter((val) => !this.selectedProducts.includes(val));
-        //     this.deleteProductsDialog = false;
-        //     this.selectedProducts = null;
-        //     this.$toast.add({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
-        // },
+
         initFilters() {
             this.filters = {
                 global: { value: null, matchMode: FilterMatchMode.CONTAINS }
             };
         },
-        // getReload(PermissionData) {
-        //     console.log('come from child to parent data ', PermissionData.mydata);
-        //     this.customers.push(PermissionData.mydata);
-        //     console.log(this.customers);
-        // },
-        // editUnit(PermissionData) {
-        //     this.visible = true;
-        //     console.log('selection data: ', PermissionData);
-        //     this.$refs.PermissionData.updatePermission(PermissionData);
-        // },
-        // addUnit() {
-        //     // this.visible = true;
-        //     console.log('Add data');
-        //     this.$refs.PermissionData.updatePermission(PermissionData);
-        // },
+
         getCustomers(data) {
             return [...(data || [])].map((d) => {
                 d.date = new Date(d.date);
@@ -494,7 +378,7 @@ export default {
     background-color: #e2e8f0;
     padding: 20px;
     padding-left: 45px;
-    height: 100px;
+    height: 220px;
     margin-bottom: 5px;
     border-radius: 8px;
 }

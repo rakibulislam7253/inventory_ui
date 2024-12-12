@@ -236,6 +236,7 @@ console.log('Application is loading from URL:', window.location.href);
 function getCookie() {
     // userToken
     UserService.userToken().then((response) => {
+        console.log('Token Data');
         console.log(response.data);
         var tockenData = response.data.result_id;
         getUserToken(tockenData);
@@ -264,9 +265,10 @@ async function getUserToken(data) {
         localStorage.setItem('userDetails', JSON.stringify(decoded));
     } else {
         console.log('log out test-2');
-        LogoutFunction.LogoutStoreClear();
-        store.dispatch('auth/logout');
-        window.location.href = 'http://czbapps.citizensbankbd.com/login';
+        alert('welcome');
+        // LogoutFunction.LogoutStoreClear();
+        // store.dispatch('auth/logout');
+        // window.location.href = 'http://czbapps.citizensbankbd.com/login';
     }
 }
 

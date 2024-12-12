@@ -89,6 +89,7 @@ export default {
     },
     mounted() {
         warehouseService.get_all_warehouse_info().then((data) => {
+            console.log(data);
             this.customers = this.getCustomers(data.data);
             console.log(this.customers);
             this.loading = false;
@@ -101,6 +102,7 @@ export default {
         },
         hearSecret() {
             warehouseService.get_all_warehouse_info().then((data) => {
+                console.log(data.data);
                 this.customers = this.getCustomers(data.data);
                 console.log(this.customers);
                 this.loading = false;

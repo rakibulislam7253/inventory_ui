@@ -72,18 +72,19 @@ export default {
         };
     },
     mounted() {
-        this.profileData = JSON.parse(localStorage.getItem('userInfo'));
-        // console.log(this.profileData.userId);
-
+        this.profileData = JSON.parse(localStorage.getItem('userDetails'));
         const moduleId = import.meta.env.VITE_APP_MODULE_ID;
-        authorization.get_unauthorized_menu_list(moduleId, this.profileData.userId).then((data) => {
+        authorization.get_unauthorized_menu_list(moduleId, this.profileData.unique_name).then((data) => {
             this.authMenuListt = data.data;
+            console.log(this.authMenuListt);
         });
     },
     methods: {
         ddown() {
             const moduleId = import.meta.env.VITE_APP_MODULE_ID;
             const menuId = this.authMenuList.column_name.column_name;
+            console.log(moduleId);
+            console.log(menuId);
             authorization.get_unauthorized_data_list(moduleId, menuId).then((data) => {
                 const dataList = data.data;
                 this.customers = this.getCustomers(data.data);
